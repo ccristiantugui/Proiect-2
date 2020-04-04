@@ -1,0 +1,2 @@
+E:\Cristian\.Net\Proiect 2\Proiect 2\WCF\obj\Debug\WCF.csprojAssemblyReference.cache
+E:\Cristian\.Net\Proiect 2\Proiect 2\WCF\obj\Debug\WCF.csproj.CoreCompileInputs.cache
