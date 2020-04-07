@@ -88,6 +88,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
     <EntityDeploy Include="Media.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Media.Designer.cs</LastGenOutput>
@@ -112,9 +115,6 @@
       <LastGenOutput>Media1.cs</LastGenOutput>
       <DependentUpon>Media.edmx</DependentUpon>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -6,52 +6,23 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Drawing;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 
 namespace WCF
 {
     public static class API
     {
-        static string[] imageExtensions = {
-            ".PNG", ".JPG", ".JPEG", ".BMP"
-        };
-        static string[] movieExtensions = {
-            ".AVI", ".MP4", ".DIVX", ".WMV"
-        };
-
-        public static string fileType(string path)
-        {
-            /// Verifica tipul continutului fisierului primit ca parametru.
-            /// Returneaza "Image", "Video" sau "Unsupported", dupa caz.
-
-            if (Array.IndexOf(imageExtensions, Path.GetExtension(path).ToUpperInvariant()) != -1)
-            {
-                return "Image";
-            }
-            else if (Array.IndexOf(movieExtensions, Path.GetExtension(path).ToUpperInvariant()) != -1)
-            {
-                return "Video";
-            }
-
-            return "Unsupported";
-        }
-
-        public static Bitmap getVideoThumbnail(string path)
-        {
-            // Extrage o imagine din video pentru "preview".
-            // Returneaza o imagine.
-
-
-
-            return null;
-        }
-
+     
         public static List<string> getPersonsFromDB()
         {
             /// Returneaza lista de persoane existente in baza de date.
             
             using (MediaContainer ctx = new MediaContainer())
             {
-                var persons = (from p in ctx.People select p.Name).ToList();
+                List<string> persons = new List<string>();
+                var personsResults = (from p in ctx.People select p.Name);
+                if (personsResults.Any())
+                    persons = personsResults.ToList();
                 return persons;
             }    
         }
@@ -62,10 +33,12 @@ namespace WCF
 
             using (MediaContainer ctx = new MediaContainer())
             {
-                var attributes = (from ca in ctx.CustomAttributes select ca.Description).ToList();
+                List<string> attributes = new List<string>();
+                var attributesResults = (from ca in ctx.CustomAttributes select ca.Description);
+                if (attributesResults.Any())
+                    attributes = attributesResults.ToList();
+                return attributes;
             }
-
-            return null;
         }
 
         public static bool addMediaToDatabase(Media media)
@@ -78,8 +51,43 @@ namespace WCF
             {
                 if (media.MediaID == 0)
                 {
-                    var it = ctx.Entry<Media>(media).State = EntityState.Added;
-                    ctx.SaveChanges();
+                    try
+                    {
+                        var it = ctx.Entry<Media>(media).State = EntityState.Added;
+
+                        if (media.LocationLocationID != 0)
+                        {
+                            Console.WriteLine(media.LocationLocationID);
+                            Console.WriteLine("This");
+                            Location l = ctx.Locations.Find(media.LocationLocationID);
+                            Console.WriteLine(l);
+                            l.Media.Add(media);
+                            ctx.Entry<Location>(l).State = EntityState.Modified;
+                        }
+
+                        if (media.EventEventID != 0)
+                        {
+                            Event e = ctx.Events.Find(media.EventEventID);
+                            e.Media.Add(media);
+                            ctx.Entry<Event>(e).State = EntityState.Modified;
+                        }
+                        
+                        ctx.SaveChanges();
+                    }
+                    catch(DbEntityValidationException e)
+                    {
+                        foreach (var eve in e.EntityValidationErrors)
+                        {
+                            Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                                eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                            foreach (var ve in eve.ValidationErrors)
+                            {
+                                Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                                    ve.PropertyName, ve.ErrorMessage);
+                            }
+                        }
+                        throw;
+                    }
                     return true;
                 }
                 else
@@ -170,7 +178,7 @@ namespace WCF
         {
             using (MediaContainer ctx = new MediaContainer())
             {
-                if (customAttributes.AttributeID == 0)
+                if (customAttributes.CustomAttributeID == 0)
                 {
                     var it = ctx.Entry<CustomAttributes>(customAttributes).State = EntityState.Added;
                     ctx.SaveChanges();
@@ -259,6 +267,51 @@ namespace WCF
             {
                 var custom_attributes = (from m in ctx.Media where (m.MediaID == media.MediaID) select m.CustomAttributes).ToList();
                 return custom_attributes;
+            }
+        }
+
+        public static Location getLocationByName(string name)
+        {
+            using (MediaContainer ctx = new MediaContainer())
+            {
+                var location = ctx.Locations
+                                   .Where(l => l.Name == name)
+                                   .SingleOrDefault();
+                return location;
+            }
+        }
+
+        public static Event getEventByName(string name)
+        {
+            using(MediaContainer ctx = new MediaContainer())
+            {
+                var mediaEvent = ctx.Events
+                                    .Where(e => e.Name == name)
+                                    .SingleOrDefault();
+
+                return mediaEvent;
+            }
+        }
+
+        public static Person getPersonByName(string name)
+        {
+            using (MediaContainer ctx = new MediaContainer())
+            {
+                var person = ctx.People
+                                .Where(p => p.Name == name)
+                                .SingleOrDefault();
+                return person;
+            }
+        }
+
+        public static CustomAttributes getAttributeByDescription(string description)
+        {
+            using(MediaContainer ctx = new MediaContainer())
+            {
+                var attribute = ctx.CustomAttributes
+                                    .Where(a => a.Description == description)
+                                    .SingleOrDefault();
+                return attribute;
             }
         }
     }

@@ -41,25 +41,25 @@
     <EntitySetMapping Name="CustomAttributes">
       <EntityTypeMapping TypeName="IsTypeOf(Media.CustomAttributes)">
         <MappingFragment StoreEntitySet="CustomAttributes">
-          <ScalarProperty Name="AttributeID" ColumnName="AttributeID" />
+          <ScalarProperty Name="CustomAttributeID" ColumnName="CustomAttributeID" />
           <ScalarProperty Name="Description" ColumnName="Description" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <AssociationSetMapping Name="MediaCustomAttributes" TypeName="Media.MediaCustomAttributes" StoreEntitySet="MediaCustomAttributes">
-      <EndProperty Name="Media">
-        <ScalarProperty Name="MediaID" ColumnName="Media_MediaID" />
-      </EndProperty>
-      <EndProperty Name="CustomAttributes">
-        <ScalarProperty Name="AttributeID" ColumnName="CustomAttributes_AttributeID" />
-      </EndProperty>
-    </AssociationSetMapping>
     <AssociationSetMapping Name="MediaPerson" TypeName="Media.MediaPerson" StoreEntitySet="MediaPerson">
       <EndProperty Name="Media">
         <ScalarProperty Name="MediaID" ColumnName="Media_MediaID" />
       </EndProperty>
       <EndProperty Name="Person">
         <ScalarProperty Name="PersonID" ColumnName="People_PersonID" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="MediaCustomAttributes" TypeName="Media.MediaCustomAttributes" StoreEntitySet="MediaCustomAttributes">
+      <EndProperty Name="Media">
+        <ScalarProperty Name="MediaID" ColumnName="Media_MediaID" />
+      </EndProperty>
+      <EndProperty Name="CustomAttributes">
+        <ScalarProperty Name="CustomAttributeID" ColumnName="CustomAttributes_CustomAttributeID" />
       </EndProperty>
     </AssociationSetMapping>
   </EntityContainerMapping>

@@ -6,21 +6,21 @@
     <EntitySet Name="People" EntityType="Media.Person" />
     <EntitySet Name="Events" EntityType="Media.Event" />
     <EntitySet Name="CustomAttributes" EntityType="Media.CustomAttributes" />
-    <AssociationSet Name="LocationID" Association="Media.LocationID">
+    <AssociationSet Name="LocationMedia" Association="Media.LocationMedia">
       <End Role="Location" EntitySet="Locations" />
       <End Role="Media" EntitySet="Media" />
     </AssociationSet>
-    <AssociationSet Name="EventID" Association="Media.EventID">
+    <AssociationSet Name="EventMedia" Association="Media.EventMedia">
       <End Role="Event" EntitySet="Events" />
       <End Role="Media" EntitySet="Media" />
-    </AssociationSet>
-    <AssociationSet Name="MediaCustomAttributes" Association="Media.MediaCustomAttributes">
-      <End Role="Media" EntitySet="Media" />
-      <End Role="CustomAttributes" EntitySet="CustomAttributes" />
     </AssociationSet>
     <AssociationSet Name="MediaPerson" Association="Media.MediaPerson">
       <End Role="Media" EntitySet="Media" />
       <End Role="Person" EntitySet="People" />
+    </AssociationSet>
+    <AssociationSet Name="MediaCustomAttributes" Association="Media.MediaCustomAttributes">
+      <End Role="Media" EntitySet="Media" />
+      <End Role="CustomAttributes" EntitySet="CustomAttributes" />
     </AssociationSet>
   </EntityContainer>
   <EntityType Name="Media">
@@ -31,13 +31,13 @@
     <Property Name="Path" Type="String" Nullable="false" />
     <Property Name="MediaType" Type="Media.MediaType" Nullable="false" />
     <Property Name="CreatedAt" Type="DateTime" Nullable="false" />
-    <Property Name="ModifiedAt" Type="String" Nullable="false" />
+    <Property Name="ModifiedAt" Type="DateTime" Nullable="false" />
     <Property Name="LocationLocationID" Type="Int32" Nullable="false" />
     <Property Name="EventEventID" Type="Int32" Nullable="false" />
-    <NavigationProperty Name="Location" Relationship="Media.LocationID" FromRole="Media" ToRole="Location" />
-    <NavigationProperty Name="Event" Relationship="Media.EventID" FromRole="Media" ToRole="Event" />
-    <NavigationProperty Name="CustomAttributes" Relationship="Media.MediaCustomAttributes" FromRole="Media" ToRole="CustomAttributes" />
+    <NavigationProperty Name="Location" Relationship="Media.LocationMedia" FromRole="Media" ToRole="Location" />
+    <NavigationProperty Name="Event" Relationship="Media.EventMedia" FromRole="Media" ToRole="Event" />
     <NavigationProperty Name="People" Relationship="Media.MediaPerson" FromRole="Media" ToRole="Person" />
+    <NavigationProperty Name="CustomAttributes" Relationship="Media.MediaCustomAttributes" FromRole="Media" ToRole="CustomAttributes" />
   </EntityType>
   <EntityType Name="Location">
     <Key>
@@ -45,7 +45,7 @@
     </Key>
     <Property Name="LocationID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="Name" Type="String" Nullable="false" />
-    <NavigationProperty Name="Media" Relationship="Media.LocationID" FromRole="Location" ToRole="Media" />
+    <NavigationProperty Name="Media" Relationship="Media.LocationMedia" FromRole="Location" ToRole="Media" />
   </EntityType>
   <EntityType Name="Person">
     <Key>
@@ -61,17 +61,17 @@
     </Key>
     <Property Name="EventID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="Name" Type="String" Nullable="false" />
-    <NavigationProperty Name="Media" Relationship="Media.EventID" FromRole="Event" ToRole="Media" />
+    <NavigationProperty Name="Media" Relationship="Media.EventMedia" FromRole="Event" ToRole="Media" />
   </EntityType>
   <EntityType Name="CustomAttributes">
     <Key>
-      <PropertyRef Name="AttributeID" />
+      <PropertyRef Name="CustomAttributeID" />
     </Key>
-    <Property Name="AttributeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CustomAttributeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="Description" Type="String" Nullable="false" />
     <NavigationProperty Name="Media" Relationship="Media.MediaCustomAttributes" FromRole="CustomAttributes" ToRole="Media" />
   </EntityType>
-  <Association Name="LocationID">
+  <Association Name="LocationMedia">
     <End Type="Media.Location" Role="Location" Multiplicity="1" />
     <End Type="Media.Media" Role="Media" Multiplicity="*" />
     <ReferentialConstraint>
@@ -83,7 +83,7 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="EventID">
+  <Association Name="EventMedia">
     <End Type="Media.Event" Role="Event" Multiplicity="1" />
     <End Type="Media.Media" Role="Media" Multiplicity="*" />
     <ReferentialConstraint>
@@ -95,16 +95,16 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="MediaCustomAttributes">
-    <End Type="Media.Media" Role="Media" Multiplicity="*" />
-    <End Type="Media.CustomAttributes" Role="CustomAttributes" Multiplicity="*" />
-  </Association>
   <Association Name="MediaPerson">
     <End Type="Media.Media" Role="Media" Multiplicity="*" />
     <End Type="Media.Person" Role="Person" Multiplicity="*" />
   </Association>
+  <Association Name="MediaCustomAttributes">
+    <End Type="Media.Media" Role="Media" Multiplicity="*" />
+    <End Type="Media.CustomAttributes" Role="CustomAttributes" Multiplicity="*" />
+  </Association>
   <EnumType Name="MediaType">
     <Member Name="Photo" />
-    <Member Name="Movie" />
+    <Member Name="Video" />
   </EnumType>
 </Schema>

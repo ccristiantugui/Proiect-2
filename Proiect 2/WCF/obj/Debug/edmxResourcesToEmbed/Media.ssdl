@@ -6,23 +6,15 @@
     <EntitySet Name="People" EntityType="Media.Store.People" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Events" EntityType="Media.Store.Events" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="CustomAttributes" EntityType="Media.Store.CustomAttributes" store:Type="Tables" Schema="dbo" />
-    <EntitySet Name="MediaCustomAttributes" EntityType="Media.Store.MediaCustomAttributes" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="MediaPerson" EntityType="Media.Store.MediaPerson" store:Type="Tables" Schema="dbo" />
-    <AssociationSet Name="LocationID" Association="Media.Store.LocationID">
+    <EntitySet Name="MediaCustomAttributes" EntityType="Media.Store.MediaCustomAttributes" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="LocationMedia" Association="Media.Store.LocationMedia">
       <End Role="Location" EntitySet="Locations" />
       <End Role="Media" EntitySet="Media" />
     </AssociationSet>
-    <AssociationSet Name="EventID" Association="Media.Store.EventID">
+    <AssociationSet Name="EventMedia" Association="Media.Store.EventMedia">
       <End Role="Event" EntitySet="Events" />
       <End Role="Media" EntitySet="Media" />
-    </AssociationSet>
-    <AssociationSet Name="FK_MediaCustomAttributes_Media" Association="Media.Store.FK_MediaCustomAttributes_Media">
-      <End Role="Media" EntitySet="Media" />
-      <End Role="MediaCustomAttributes" EntitySet="MediaCustomAttributes" />
-    </AssociationSet>
-    <AssociationSet Name="FK_MediaCustomAttributes_CustomAttributes" Association="Media.Store.FK_MediaCustomAttributes_CustomAttributes">
-      <End Role="CustomAttributes" EntitySet="CustomAttributes" />
-      <End Role="MediaCustomAttributes" EntitySet="MediaCustomAttributes" />
     </AssociationSet>
     <AssociationSet Name="FK_MediaPerson_Media" Association="Media.Store.FK_MediaPerson_Media">
       <End Role="Media" EntitySet="Media" />
@@ -31,6 +23,14 @@
     <AssociationSet Name="FK_MediaPerson_Person" Association="Media.Store.FK_MediaPerson_Person">
       <End Role="Person" EntitySet="People" />
       <End Role="MediaPerson" EntitySet="MediaPerson" />
+    </AssociationSet>
+    <AssociationSet Name="FK_MediaCustomAttributes_Media" Association="Media.Store.FK_MediaCustomAttributes_Media">
+      <End Role="Media" EntitySet="Media" />
+      <End Role="MediaCustomAttributes" EntitySet="MediaCustomAttributes" />
+    </AssociationSet>
+    <AssociationSet Name="FK_MediaCustomAttributes_CustomAttributes" Association="Media.Store.FK_MediaCustomAttributes_CustomAttributes">
+      <End Role="CustomAttributes" EntitySet="CustomAttributes" />
+      <End Role="MediaCustomAttributes" EntitySet="MediaCustomAttributes" />
     </AssociationSet>
   </EntityContainer>
   <EntityType Name="Media">
@@ -41,7 +41,7 @@
     <Property Name="Path" Type="nvarchar(max)" Nullable="false" />
     <Property Name="MediaType" Type="int" Nullable="false" />
     <Property Name="CreatedAt" Type="datetime" Nullable="false" />
-    <Property Name="ModifiedAt" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="ModifiedAt" Type="datetime" Nullable="false" />
     <Property Name="LocationLocationID" Type="int" Nullable="false" />
     <Property Name="EventEventID" Type="int" Nullable="false" />
   </EntityType>
@@ -68,18 +68,10 @@
   </EntityType>
   <EntityType Name="CustomAttributes">
     <Key>
-      <PropertyRef Name="AttributeID" />
+      <PropertyRef Name="CustomAttributeID" />
     </Key>
-    <Property Name="AttributeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="CustomAttributeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
-  </EntityType>
-  <EntityType Name="MediaCustomAttributes">
-    <Key>
-      <PropertyRef Name="Media_MediaID" />
-      <PropertyRef Name="CustomAttributes_AttributeID" />
-    </Key>
-    <Property Name="Media_MediaID" Type="int" Nullable="false" />
-    <Property Name="CustomAttributes_AttributeID" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="MediaPerson">
     <Key>
@@ -89,7 +81,15 @@
     <Property Name="Media_MediaID" Type="int" Nullable="false" />
     <Property Name="People_PersonID" Type="int" Nullable="false" />
   </EntityType>
-  <Association Name="LocationID">
+  <EntityType Name="MediaCustomAttributes">
+    <Key>
+      <PropertyRef Name="Media_MediaID" />
+      <PropertyRef Name="CustomAttributes_CustomAttributeID" />
+    </Key>
+    <Property Name="Media_MediaID" Type="int" Nullable="false" />
+    <Property Name="CustomAttributes_CustomAttributeID" Type="int" Nullable="false" />
+  </EntityType>
+  <Association Name="LocationMedia">
     <End Role="Location" Type="Media.Store.Locations" Multiplicity="1" />
     <End Role="Media" Type="Media.Store.Media" Multiplicity="*" />
     <ReferentialConstraint>
@@ -101,7 +101,7 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="EventID">
+  <Association Name="EventMedia">
     <End Role="Event" Type="Media.Store.Events" Multiplicity="1" />
     <End Role="Media" Type="Media.Store.Media" Multiplicity="*" />
     <ReferentialConstraint>
@@ -110,30 +110,6 @@
       </Principal>
       <Dependent Role="Media">
         <PropertyRef Name="EventEventID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK_MediaCustomAttributes_Media">
-    <End Role="Media" Type="Media.Store.Media" Multiplicity="1" />
-    <End Role="MediaCustomAttributes" Type="Media.Store.MediaCustomAttributes" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="Media">
-        <PropertyRef Name="MediaID" />
-      </Principal>
-      <Dependent Role="MediaCustomAttributes">
-        <PropertyRef Name="Media_MediaID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="FK_MediaCustomAttributes_CustomAttributes">
-    <End Role="MediaCustomAttributes" Type="Media.Store.MediaCustomAttributes" Multiplicity="*" />
-    <End Role="CustomAttributes" Type="Media.Store.CustomAttributes" Multiplicity="1" />
-    <ReferentialConstraint>
-      <Principal Role="CustomAttributes">
-        <PropertyRef Name="AttributeID" />
-      </Principal>
-      <Dependent Role="MediaCustomAttributes">
-        <PropertyRef Name="CustomAttributes_AttributeID" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -158,6 +134,30 @@
       </Principal>
       <Dependent Role="MediaPerson">
         <PropertyRef Name="People_PersonID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_MediaCustomAttributes_Media">
+    <End Role="Media" Type="Media.Store.Media" Multiplicity="1" />
+    <End Role="MediaCustomAttributes" Type="Media.Store.MediaCustomAttributes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Media">
+        <PropertyRef Name="MediaID" />
+      </Principal>
+      <Dependent Role="MediaCustomAttributes">
+        <PropertyRef Name="Media_MediaID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_MediaCustomAttributes_CustomAttributes">
+    <End Role="MediaCustomAttributes" Type="Media.Store.MediaCustomAttributes" Multiplicity="*" />
+    <End Role="CustomAttributes" Type="Media.Store.CustomAttributes" Multiplicity="1" />
+    <ReferentialConstraint>
+      <Principal Role="CustomAttributes">
+        <PropertyRef Name="CustomAttributeID" />
+      </Principal>
+      <Dependent Role="MediaCustomAttributes">
+        <PropertyRef Name="CustomAttributes_CustomAttributeID" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

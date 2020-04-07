@@ -14,6 +14,6 @@ namespace WCF
     public enum MediaType : int
     {
         Photo = 0,
-        Movie = 1
+        Video = 1
     }
 }

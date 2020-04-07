@@ -36,6 +36,9 @@ namespace ObjectWCF
     {
         [OperationContract]
         bool AddLocation(Location location);
+        
+        [OperationContract]
+        Location GetLocationByName(string name);
     }
 
     [ServiceContract]
@@ -43,6 +46,9 @@ namespace ObjectWCF
     { 
         [OperationContract]
         bool AddEvent(Event mediaEvent);
+
+        [OperationContract]
+        Event GetEventByName(string name);
     }
 
     [ServiceContract]
@@ -50,6 +56,12 @@ namespace ObjectWCF
     {
         [OperationContract]
         bool AddPerson(Person person);
+        
+        [OperationContract]
+        List<string> GetAllPersons();
+
+        [OperationContract]
+        Person GetPersonByName(string name);
     }
 
     [ServiceContract]
@@ -57,6 +69,12 @@ namespace ObjectWCF
     {
         [OperationContract]
         bool AddCustomAttribute(CustomAttributes customAttribute);
+        
+        [OperationContract]
+        List<string> GetAllAttributes();
+
+        [OperationContract]
+        CustomAttributes GetAttributeByDescription(string description);
     }
 
     [ServiceContract]

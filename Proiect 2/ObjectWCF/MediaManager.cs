@@ -39,14 +39,44 @@ namespace ObjectWCF
             return API.removeMediaFromDatabase(media.Path);
         }
 
+        public List<string> GetAllAttributes()
+        {
+            return API.getCustomAttributesFromDB();
+        }
+
+        public List<string> GetAllPersons()
+        {
+            return API.getPersonsFromDB();    
+        }
+
+        public CustomAttributes GetAttributeByDescription(string description)
+        {
+            return API.getAttributeByDescription(description);
+        }
+
         public List<ICollection<CustomAttributes>> GetCustomAttributesFromMedia(Media media)
         {
             return API.getCustomAttributesFromMedia(media);
         }
 
+        public Event GetEventByName(string name)
+        {
+            return API.getEventByName(name);
+        }
+
+        public Location GetLocationByName(string name)
+        {
+            return API.getLocationByName(name);
+        }
+
         public List<ICollection<Person>> GetPeopleFromMedia(Media media)
         {
             return API.getPersonsFromMedia(media);
+        }
+
+        public Person GetPersonByName(string name)
+        {
+            return API.getPersonByName(name);
         }
 
         public List<Media> SearchInDB(string searchKey)
