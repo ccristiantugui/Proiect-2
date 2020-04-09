@@ -13,7 +13,7 @@ namespace ObjectWCF
     interface InterfaceMedia
     {
         [OperationContract]
-        bool AddMedia(Media media);
+        bool AddMedia(Media media, List<Person> people, List<CustomAttributes> customAttributes);
 
         [OperationContract]
         bool UpdateMedia(Media media);
@@ -25,10 +25,10 @@ namespace ObjectWCF
         List<Media> SearchInDB(String searchKey);
 
         [OperationContract]
-        List<ICollection<Person>> GetPeopleFromMedia(Media media);
+        List<Person> GetPeopleFromMedia(Media media);
 
         [OperationContract]
-        List<ICollection<CustomAttributes>> GetCustomAttributesFromMedia(Media media);
+        List<CustomAttributes> GetCustomAttributesFromMedia(Media media);
     }
 
     [ServiceContract]

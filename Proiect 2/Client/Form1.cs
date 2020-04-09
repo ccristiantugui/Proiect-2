@@ -168,7 +168,6 @@ namespace Client
                 addAttribute_btn.Top = 50;
                 addAttribute_btn.Left = newAttribute.Left + 125;
                 newAttribute.Parent = groupBox1;
-                Debug.WriteLine(newAttribute.Parent);
                 this.Controls.Add(newAttribute);
                 newAttribute.BringToFront();
                 newAttributesList.Add(newAttribute);
@@ -205,11 +204,12 @@ namespace Client
 
             Media mediaToAdd = new Media();
 
-            string mediaPath = path_CmbCox.SelectedIndex.ToString();
+            string mediaPath = path_CmbCox.SelectedItem.ToString();
             string mediaLocation = location_txt.Text;
             string mediaEvent = event_txt.Text;
 
-            List<string> mediaPersons = this.addedPersons;
+
+            List<string> mediaPersons = new List<string>();
             foreach (object item in persons_cmbBox.Items)
             {
                 mediaPersons.Add(item.ToString());
@@ -218,8 +218,10 @@ namespace Client
             List<string> mediaAttributes = new List<string>();
             foreach (ComboBox att in newAttributesList)
             {
-                if (att.SelectedItem != null)
-                    mediaAttributes.Add(att.SelectedItem.ToString());
+                if (att.Text != null)
+                {
+                    mediaAttributes.Add(att.Text);
+                }
             }
 
             mediaToAdd.Path = mediaPath;
@@ -236,6 +238,8 @@ namespace Client
                         setErrorMessage("The location you entered could not be added.", "add");
                         return;
                     }
+
+                    location = mediaManagerProxy.GetLocationByName(mediaLocation);
                 }
 
                 mediaToAdd.Location = location;
@@ -259,6 +263,8 @@ namespace Client
                         setErrorMessage("The event youy entered could not be added.", "add");
                         return;
                     }
+                    mEvent = mediaManagerProxy.GetEventByName(mediaEvent);
+
                 }
 
                 mediaToAdd.Event = mEvent;
@@ -278,45 +284,84 @@ namespace Client
                 {
                     person = new Person();
                     person.Name = personName;
-                    if (!mediaManagerProxy.AddPerson(person))
+                    bool success = mediaManagerProxy.AddPerson(person);
+                    if (!success)
                     {
                         setErrorMessage("Person " + personName + " could not be added.", "add");
                         return;
                     }
+                    person = mediaManagerProxy.GetPersonByName(personName);
+
                 }
                 associatedPersons.Add(person);
             }
 
-            mediaToAdd.People = associatedPersons.ToArray();
-
             List<CustomAttributes> associatedAttributes = new List<CustomAttributes>();
             foreach (string attributeDescription in mediaAttributes)
             {
-                CustomAttributes attribute = mediaManagerProxy.GetAttributeByDescription(attributeDescription);
-                if (attribute == null)
+                if (attributeDescription.Any())
                 {
-                    attribute = new CustomAttributes();
-                    attribute.Description = attributeDescription;
-                    if (!mediaManagerProxy.AddCustomAttribute(attribute))
+                    CustomAttributes attribute = mediaManagerProxy.GetAttributeByDescription(attributeDescription);
+                    if (attribute == null)
                     {
-                        setErrorMessage("Attribute " + attributeDescription + " could not be added.", "add");
-                        return;
+                        attribute = new CustomAttributes();
+                        attribute.Description = attributeDescription;
+                        if (!mediaManagerProxy.AddCustomAttribute(attribute))
+                        {
+                            setErrorMessage("Attribute " + attributeDescription + " could not be added.", "add");
+                            return;
+                        }
+                        attribute = mediaManagerProxy.GetAttributeByDescription(attributeDescription);
                     }
+                    associatedAttributes.Add(attribute);
                 }
-                associatedAttributes.Add(attribute);
             }
 
-            mediaToAdd.CustomAttributes = associatedAttributes.ToArray();
 
             mediaToAdd.ModifiedAt = DateTime.Now;
             mediaToAdd.CreatedAt = DateTime.Now;
+            switch (API.fileType(mediaToAdd.Path))
+            {
+                case "Image":
+                    mediaToAdd.MediaType = WCF.MediaType.Photo;
+                    break;
+                case "Video":
+                    mediaToAdd.MediaType = WCF.MediaType.Video;
+                    break;
+            }
 
-            bool succes = mediaManagerProxy.AddMedia(mediaToAdd);
+            bool succes = mediaManagerProxy.AddMedia(mediaToAdd, associatedPersons.ToArray(), associatedAttributes.ToArray());
             if (!succes)
             {
                 setErrorMessage("The media could not be added.", "add");
                 return;
             }
+
+            path_CmbCox.Items.Remove(mediaPath);
+            location_txt.Text = "";
+            event_txt.Text = "";
+            persons_cmbBox.Items.Clear();
+            moviePreview_MediaPly.Visible = false;
+            thumbnail_picBox.Visible = false;
+            ResetCustomAttributes();
+        }
+
+        private void ResetCustomAttributes()
+        {
+            foreach(var attribute in newAttributesList)
+            {
+                if (newAttributesList.IndexOf(attribute) != 0)
+                {
+                    this.Controls.Remove(attribute);
+                    attribute.Dispose();
+                }
+            }
+
+            newAttributesList.Clear();
+            newAttributesList.Add(attribute1_box);
+
+            addAttribute_btn.Location = new Point(254, 50);
+            attribute1_box.Text = "";
         }
 
         private void setErrorMessage(string error, string type)

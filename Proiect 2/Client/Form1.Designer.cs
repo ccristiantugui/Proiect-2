@@ -32,8 +32,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mmInterface));
             this.TabControl = new System.Windows.Forms.TabControl();
             this.addMedia_tab = new System.Windows.Forms.TabPage();
+            this.addError_lbl = new System.Windows.Forms.Label();
             this.addMedia_btn = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.moviePreview_MediaPly = new AxWMPLib.AxWindowsMediaPlayer();
             this.info_Box = new System.Windows.Forms.PictureBox();
             this.persons_cmbBox = new System.Windows.Forms.ComboBox();
             this.path_CmbCox = new System.Windows.Forms.ComboBox();
@@ -54,6 +56,7 @@
             this.delete_btn = new System.Windows.Forms.Button();
             this.search_btn = new System.Windows.Forms.Button();
             this.searchResults_box = new System.Windows.Forms.GroupBox();
+            this.movie_MediaPly = new AxWMPLib.AxWindowsMediaPlayer();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.extra_cmbBox = new System.Windows.Forms.ComboBox();
             this.persons2_cmbBox = new System.Windows.Forms.ComboBox();
@@ -68,20 +71,17 @@
             this.search_txt = new System.Windows.Forms.TextBox();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.moviePreview_MediaPly = new AxWMPLib.AxWindowsMediaPlayer();
-            this.movie_MediaPly = new AxWMPLib.AxWindowsMediaPlayer();
-            this.addError_lbl = new System.Windows.Forms.Label();
             this.TabControl.SuspendLayout();
             this.addMedia_tab.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.moviePreview_MediaPly)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.info_Box)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.thumbnail_picBox)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.browse_tab.SuspendLayout();
             this.searchResults_box.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.moviePreview_MediaPly)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.movie_MediaPly)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // TabControl
@@ -90,7 +90,7 @@
             this.TabControl.Controls.Add(this.browse_tab);
             this.TabControl.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F);
             this.TabControl.Location = new System.Drawing.Point(9, 10);
-            this.TabControl.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.TabControl.Margin = new System.Windows.Forms.Padding(2);
             this.TabControl.Name = "TabControl";
             this.TabControl.SelectedIndex = 0;
             this.TabControl.Size = new System.Drawing.Size(772, 561);
@@ -104,18 +104,28 @@
             this.addMedia_tab.Controls.Add(this.groupBox1);
             this.addMedia_tab.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.addMedia_tab.Location = new System.Drawing.Point(4, 25);
-            this.addMedia_tab.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.addMedia_tab.Margin = new System.Windows.Forms.Padding(2);
             this.addMedia_tab.Name = "addMedia_tab";
-            this.addMedia_tab.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.addMedia_tab.Padding = new System.Windows.Forms.Padding(2);
             this.addMedia_tab.Size = new System.Drawing.Size(764, 532);
             this.addMedia_tab.TabIndex = 0;
             this.addMedia_tab.Text = "Add Media";
             this.addMedia_tab.UseVisualStyleBackColor = true;
             // 
+            // addError_lbl
+            // 
+            this.addError_lbl.AutoSize = true;
+            this.addError_lbl.ForeColor = System.Drawing.Color.Red;
+            this.addError_lbl.Location = new System.Drawing.Point(448, 493);
+            this.addError_lbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.addError_lbl.Name = "addError_lbl";
+            this.addError_lbl.Size = new System.Drawing.Size(0, 17);
+            this.addError_lbl.TabIndex = 13;
+            // 
             // addMedia_btn
             // 
             this.addMedia_btn.Location = new System.Drawing.Point(341, 488);
-            this.addMedia_btn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.addMedia_btn.Margin = new System.Windows.Forms.Padding(2);
             this.addMedia_btn.Name = "addMedia_btn";
             this.addMedia_btn.Size = new System.Drawing.Size(82, 27);
             this.addMedia_btn.TabIndex = 9;
@@ -140,19 +150,31 @@
             this.groupBox2.Controls.Add(this.openFile_btn);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F);
             this.groupBox2.Location = new System.Drawing.Point(5, 8);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox2.Size = new System.Drawing.Size(758, 265);
             this.groupBox2.TabIndex = 10;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Premade Properties";
             // 
+            // moviePreview_MediaPly
+            // 
+            this.moviePreview_MediaPly.Enabled = true;
+            this.moviePreview_MediaPly.Location = new System.Drawing.Point(440, 26);
+            this.moviePreview_MediaPly.Margin = new System.Windows.Forms.Padding(2);
+            this.moviePreview_MediaPly.MaximumSize = new System.Drawing.Size(292, 221);
+            this.moviePreview_MediaPly.Name = "moviePreview_MediaPly";
+            this.moviePreview_MediaPly.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("moviePreview_MediaPly.OcxState")));
+            this.moviePreview_MediaPly.Size = new System.Drawing.Size(292, 221);
+            this.moviePreview_MediaPly.TabIndex = 12;
+            this.moviePreview_MediaPly.Visible = false;
+            // 
             // info_Box
             // 
             this.info_Box.ImageLocation = "";
             this.info_Box.Location = new System.Drawing.Point(733, 11);
-            this.info_Box.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.info_Box.Margin = new System.Windows.Forms.Padding(2);
             this.info_Box.Name = "info_Box";
             this.info_Box.Size = new System.Drawing.Size(23, 24);
             this.info_Box.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -163,16 +185,17 @@
             // 
             this.persons_cmbBox.FormattingEnabled = true;
             this.persons_cmbBox.Location = new System.Drawing.Point(111, 208);
-            this.persons_cmbBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.persons_cmbBox.Margin = new System.Windows.Forms.Padding(2);
             this.persons_cmbBox.Name = "persons_cmbBox";
             this.persons_cmbBox.Size = new System.Drawing.Size(141, 24);
             this.persons_cmbBox.TabIndex = 11;
             // 
             // path_CmbCox
             // 
+            this.path_CmbCox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.path_CmbCox.FormattingEnabled = true;
             this.path_CmbCox.Location = new System.Drawing.Point(111, 30);
-            this.path_CmbCox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.path_CmbCox.Margin = new System.Windows.Forms.Padding(2);
             this.path_CmbCox.Name = "path_CmbCox";
             this.path_CmbCox.Size = new System.Drawing.Size(282, 24);
             this.path_CmbCox.TabIndex = 9;
@@ -181,7 +204,7 @@
             // addPerson_btn
             // 
             this.addPerson_btn.Location = new System.Drawing.Point(256, 206);
-            this.addPerson_btn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.addPerson_btn.Margin = new System.Windows.Forms.Padding(2);
             this.addPerson_btn.Name = "addPerson_btn";
             this.addPerson_btn.Size = new System.Drawing.Size(22, 24);
             this.addPerson_btn.TabIndex = 3;
@@ -203,7 +226,7 @@
             // 
             this.event_txt.ForeColor = System.Drawing.SystemColors.WindowText;
             this.event_txt.Location = new System.Drawing.Point(111, 156);
-            this.event_txt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.event_txt.Margin = new System.Windows.Forms.Padding(2);
             this.event_txt.MaxLength = 60;
             this.event_txt.Name = "event_txt";
             this.event_txt.Size = new System.Drawing.Size(141, 22);
@@ -222,7 +245,7 @@
             // location_txt
             // 
             this.location_txt.Location = new System.Drawing.Point(111, 101);
-            this.location_txt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.location_txt.Margin = new System.Windows.Forms.Padding(2);
             this.location_txt.MaxLength = 60;
             this.location_txt.Name = "location_txt";
             this.location_txt.Size = new System.Drawing.Size(141, 22);
@@ -241,7 +264,7 @@
             // thumbnail_picBox
             // 
             this.thumbnail_picBox.Location = new System.Drawing.Point(446, 30);
-            this.thumbnail_picBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.thumbnail_picBox.Margin = new System.Windows.Forms.Padding(2);
             this.thumbnail_picBox.Name = "thumbnail_picBox";
             this.thumbnail_picBox.Size = new System.Drawing.Size(291, 223);
             this.thumbnail_picBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
@@ -261,7 +284,7 @@
             // openFile_btn
             // 
             this.openFile_btn.Location = new System.Drawing.Point(14, 28);
-            this.openFile_btn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.openFile_btn.Margin = new System.Windows.Forms.Padding(2);
             this.openFile_btn.Name = "openFile_btn";
             this.openFile_btn.Size = new System.Drawing.Size(82, 27);
             this.openFile_btn.TabIndex = 0;
@@ -277,9 +300,9 @@
             this.groupBox1.Controls.Add(this.attribute1_box);
             this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F);
             this.groupBox1.Location = new System.Drawing.Point(7, 273);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(758, 210);
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
@@ -288,7 +311,7 @@
             // addAttribute_btn
             // 
             this.addAttribute_btn.Location = new System.Drawing.Point(254, 50);
-            this.addAttribute_btn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.addAttribute_btn.Margin = new System.Windows.Forms.Padding(2);
             this.addAttribute_btn.Name = "addAttribute_btn";
             this.addAttribute_btn.Size = new System.Drawing.Size(22, 24);
             this.addAttribute_btn.TabIndex = 2;
@@ -310,7 +333,7 @@
             // 
             this.attribute1_box.FormattingEnabled = true;
             this.attribute1_box.Location = new System.Drawing.Point(110, 50);
-            this.attribute1_box.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.attribute1_box.Margin = new System.Windows.Forms.Padding(2);
             this.attribute1_box.Name = "attribute1_box";
             this.attribute1_box.Size = new System.Drawing.Size(141, 24);
             this.attribute1_box.TabIndex = 0;
@@ -323,9 +346,9 @@
             this.browse_tab.Controls.Add(this.search_txt);
             this.browse_tab.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F);
             this.browse_tab.Location = new System.Drawing.Point(4, 25);
-            this.browse_tab.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.browse_tab.Margin = new System.Windows.Forms.Padding(2);
             this.browse_tab.Name = "browse_tab";
-            this.browse_tab.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.browse_tab.Padding = new System.Windows.Forms.Padding(2);
             this.browse_tab.Size = new System.Drawing.Size(764, 532);
             this.browse_tab.TabIndex = 1;
             this.browse_tab.Text = "Browse";
@@ -334,7 +357,7 @@
             // delete_btn
             // 
             this.delete_btn.Location = new System.Drawing.Point(342, 471);
-            this.delete_btn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.delete_btn.Margin = new System.Windows.Forms.Padding(2);
             this.delete_btn.Name = "delete_btn";
             this.delete_btn.Size = new System.Drawing.Size(82, 27);
             this.delete_btn.TabIndex = 11;
@@ -345,7 +368,7 @@
             // search_btn
             // 
             this.search_btn.Location = new System.Drawing.Point(555, 24);
-            this.search_btn.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.search_btn.Margin = new System.Windows.Forms.Padding(2);
             this.search_btn.Name = "search_btn";
             this.search_btn.Size = new System.Drawing.Size(82, 27);
             this.search_btn.TabIndex = 10;
@@ -369,19 +392,28 @@
             this.searchResults_box.Controls.Add(this.searchResults_cmbBox);
             this.searchResults_box.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.5F);
             this.searchResults_box.Location = new System.Drawing.Point(14, 76);
-            this.searchResults_box.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.searchResults_box.Margin = new System.Windows.Forms.Padding(2);
             this.searchResults_box.Name = "searchResults_box";
-            this.searchResults_box.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.searchResults_box.Padding = new System.Windows.Forms.Padding(2);
             this.searchResults_box.Size = new System.Drawing.Size(737, 441);
             this.searchResults_box.TabIndex = 2;
             this.searchResults_box.TabStop = false;
             this.searchResults_box.Text = "Search Results";
             // 
+            // movie_MediaPly
+            // 
+            this.movie_MediaPly.Enabled = true;
+            this.movie_MediaPly.Location = new System.Drawing.Point(405, 110);
+            this.movie_MediaPly.Name = "movie_MediaPly";
+            this.movie_MediaPly.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("movie_MediaPly.OcxState")));
+            this.movie_MediaPly.Size = new System.Drawing.Size(291, 223);
+            this.movie_MediaPly.TabIndex = 12;
+            // 
             // pictureBox2
             // 
             this.pictureBox2.ImageLocation = "";
             this.pictureBox2.Location = new System.Drawing.Point(405, 110);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(291, 223);
             this.pictureBox2.TabIndex = 19;
@@ -391,7 +423,7 @@
             // 
             this.extra_cmbBox.FormattingEnabled = true;
             this.extra_cmbBox.Location = new System.Drawing.Point(120, 292);
-            this.extra_cmbBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.extra_cmbBox.Margin = new System.Windows.Forms.Padding(2);
             this.extra_cmbBox.Name = "extra_cmbBox";
             this.extra_cmbBox.Size = new System.Drawing.Size(141, 24);
             this.extra_cmbBox.TabIndex = 17;
@@ -400,7 +432,7 @@
             // 
             this.persons2_cmbBox.FormattingEnabled = true;
             this.persons2_cmbBox.Location = new System.Drawing.Point(120, 238);
-            this.persons2_cmbBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.persons2_cmbBox.Margin = new System.Windows.Forms.Padding(2);
             this.persons2_cmbBox.Name = "persons2_cmbBox";
             this.persons2_cmbBox.Size = new System.Drawing.Size(141, 24);
             this.persons2_cmbBox.TabIndex = 16;
@@ -428,7 +460,7 @@
             // event2_txt
             // 
             this.event2_txt.Location = new System.Drawing.Point(120, 186);
-            this.event2_txt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.event2_txt.Margin = new System.Windows.Forms.Padding(2);
             this.event2_txt.MaxLength = 60;
             this.event2_txt.Name = "event2_txt";
             this.event2_txt.Size = new System.Drawing.Size(141, 22);
@@ -447,7 +479,7 @@
             // location2_txt
             // 
             this.location2_txt.Location = new System.Drawing.Point(120, 131);
-            this.location2_txt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.location2_txt.Margin = new System.Windows.Forms.Padding(2);
             this.location2_txt.MaxLength = 60;
             this.location2_txt.Name = "location2_txt";
             this.location2_txt.Size = new System.Drawing.Size(141, 22);
@@ -476,7 +508,7 @@
             // 
             this.searchResults_cmbBox.FormattingEnabled = true;
             this.searchResults_cmbBox.Location = new System.Drawing.Point(120, 28);
-            this.searchResults_cmbBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.searchResults_cmbBox.Margin = new System.Windows.Forms.Padding(2);
             this.searchResults_cmbBox.Name = "searchResults_cmbBox";
             this.searchResults_cmbBox.Size = new System.Drawing.Size(498, 24);
             this.searchResults_cmbBox.TabIndex = 0;
@@ -485,7 +517,7 @@
             // search_txt
             // 
             this.search_txt.Location = new System.Drawing.Point(215, 26);
-            this.search_txt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.search_txt.Margin = new System.Windows.Forms.Padding(2);
             this.search_txt.MaxLength = 60;
             this.search_txt.Name = "search_txt";
             this.search_txt.Size = new System.Drawing.Size(336, 22);
@@ -495,44 +527,13 @@
             // 
             this.openFileDialog.FileName = "openFileDialog";
             // 
-            // moviePreview_MediaPly
-            // 
-            this.moviePreview_MediaPly.Enabled = true;
-            this.moviePreview_MediaPly.Location = new System.Drawing.Point(440, 26);
-            this.moviePreview_MediaPly.Margin = new System.Windows.Forms.Padding(2);
-            this.moviePreview_MediaPly.MaximumSize = new System.Drawing.Size(292, 221);
-            this.moviePreview_MediaPly.Name = "moviePreview_MediaPly";
-            this.moviePreview_MediaPly.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("moviePreview_MediaPly.OcxState")));
-            this.moviePreview_MediaPly.Size = new System.Drawing.Size(292, 221);
-            this.moviePreview_MediaPly.TabIndex = 12;
-            this.moviePreview_MediaPly.Visible = false;
-            // 
-            // movie_MediaPly
-            // 
-            this.movie_MediaPly.Enabled = true;
-            this.movie_MediaPly.Location = new System.Drawing.Point(405, 110);
-            this.movie_MediaPly.Name = "movie_MediaPly";
-            this.movie_MediaPly.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("movie_MediaPly.OcxState")));
-            this.movie_MediaPly.Size = new System.Drawing.Size(291, 223);
-            this.movie_MediaPly.TabIndex = 12;
-            // 
-            // addError_lbl
-            // 
-            this.addError_lbl.AutoSize = true;
-            this.addError_lbl.ForeColor = System.Drawing.Color.Red;
-            this.addError_lbl.Location = new System.Drawing.Point(448, 493);
-            this.addError_lbl.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.addError_lbl.Name = "addError_lbl";
-            this.addError_lbl.Size = new System.Drawing.Size(0, 17);
-            this.addError_lbl.TabIndex = 13;
-            // 
             // mmInterface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(790, 580);
             this.Controls.Add(this.TabControl);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "mmInterface";
             this.Text = "Media Manager";
             this.Load += new System.EventHandler(this.mmInterface_Load);
@@ -541,6 +542,7 @@
             this.addMedia_tab.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.moviePreview_MediaPly)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.info_Box)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.thumbnail_picBox)).EndInit();
             this.groupBox1.ResumeLayout(false);
@@ -549,9 +551,8 @@
             this.browse_tab.PerformLayout();
             this.searchResults_box.ResumeLayout(false);
             this.searchResults_box.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.moviePreview_MediaPly)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.movie_MediaPly)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }

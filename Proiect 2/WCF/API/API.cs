@@ -12,11 +12,11 @@ namespace WCF
 {
     public static class API
     {
-     
+
         public static List<string> getPersonsFromDB()
         {
             /// Returneaza lista de persoane existente in baza de date.
-            
+
             using (MediaContainer ctx = new MediaContainer())
             {
                 List<string> persons = new List<string>();
@@ -24,7 +24,7 @@ namespace WCF
                 if (personsResults.Any())
                     persons = personsResults.ToList();
                 return persons;
-            }    
+            }
         }
 
         public static List<string> getCustomAttributesFromDB()
@@ -41,7 +41,7 @@ namespace WCF
             }
         }
 
-        public static bool addMediaToDatabase(Media media)
+        public static bool addMediaToDatabase(Media media, List<Person> people, List<CustomAttributes> customAttributes)
         {
             /// Adauga in baza de date o intrare cu valorile parametrilor. 
             /// Daca calea specificata se afla in baza de date, atunci datele vor fi modificate cu noii parametrii.
@@ -54,27 +54,64 @@ namespace WCF
                     try
                     {
                         var it = ctx.Entry<Media>(media).State = EntityState.Added;
+                        //ctx.Media.Add(media);
 
-                        if (media.LocationLocationID != 0)
+                        Console.WriteLine(media.LocationLocationID);
+
+                        //if (media.LocationLocationID != 0)
+                        //{
+                        //    Console.WriteLine(media.LocationLocationID);
+                        //    Location l = ctx.Locations.Find(media.LocationLocationID);
+                        //    Console.WriteLine(l);
+                        //    l.Media.Add(media);
+                        //    ctx.Entry<Location>(l).State = EntityState.Modified;
+                        //}
+
+                        //if (media.EventEventID != 0)
+                        //{
+                        //    Event e = ctx.Events.Find(media.EventEventID);
+                        //    e.Media.Add(media);
+                        //    ctx.Entry<Event>(e).State = EntityState.Modified;
+                        //}
+
+                        foreach (Person p in people)
                         {
-                            Console.WriteLine(media.LocationLocationID);
-                            Console.WriteLine("This");
-                            Location l = ctx.Locations.Find(media.LocationLocationID);
-                            Console.WriteLine(l);
-                            l.Media.Add(media);
-                            ctx.Entry<Location>(l).State = EntityState.Modified;
+                            if (media.People == null)
+                            {
+                                media.People = new List<Person>();
+                            }
+                            if (!media.People.Contains(p))
+                            {
+                                ctx.Entry<Person>(p).State = EntityState.Unchanged;
+                                media.People.Add(p);
+                            }
                         }
 
-                        if (media.EventEventID != 0)
+                        foreach (CustomAttributes custom in customAttributes)
                         {
-                            Event e = ctx.Events.Find(media.EventEventID);
-                            e.Media.Add(media);
-                            ctx.Entry<Event>(e).State = EntityState.Modified;
+                            if (custom.Description.Any())
+                            {
+                                if (media.CustomAttributes == null)
+                                {
+                                    media.CustomAttributes = new List<CustomAttributes>();
+                                }
+                                if (media.CustomAttributes.Contains(custom))
+                                {
+                                    ctx.Entry<CustomAttributes>(custom).State = EntityState.Unchanged;
+                                    media.CustomAttributes.Add(custom);
+                                }
+                            }
                         }
-                        
+
+                        Location location = ctx.Locations.Find(media.LocationLocationID);
+                        ctx.Entry<Location>(location).State = EntityState.Unchanged;
+
+                        Event mEvent = ctx.Events.Find(media.EventEventID);
+                        ctx.Entry<Event>(mEvent).State = EntityState.Unchanged;
+
                         ctx.SaveChanges();
                     }
-                    catch(DbEntityValidationException e)
+                    catch (DbEntityValidationException e)
                     {
                         foreach (var eve in e.EntityValidationErrors)
                         {
@@ -103,7 +140,7 @@ namespace WCF
             {
                 Media oldMedia = ctx.Media.Find(media.MediaID);
 
-                if(oldMedia == null)
+                if (oldMedia == null)
                 {
                     return false;
                 }
@@ -136,7 +173,7 @@ namespace WCF
         {
             using (MediaContainer ctx = new MediaContainer())
             {
-                if(location.LocationID == 0)
+                if (location.LocationID == 0)
                 {
                     var it = ctx.Entry<Location>(location).State = EntityState.Added;
                     ctx.SaveChanges();
@@ -166,7 +203,7 @@ namespace WCF
             {
                 if (person.PersonID == 0)
                 {
-                    var it = ctx.Entry<Person>(person).State = EntityState.Added;
+                    ctx.People.Add(person);
                     ctx.SaveChanges();
                     return true;
                 }
@@ -180,11 +217,20 @@ namespace WCF
             {
                 if (customAttributes.CustomAttributeID == 0)
                 {
-                    var it = ctx.Entry<CustomAttributes>(customAttributes).State = EntityState.Added;
+                    ctx.CustomAttributes.Add(customAttributes);
                     ctx.SaveChanges();
                     return true;
                 }
                 return false;
+            }
+        }
+
+        public static Media getMediaByPath(string path)
+        {
+            using (MediaContainer ctx = new MediaContainer())
+            {
+                var media = from m in ctx.Media where m.Path == path select m;
+                return (Media)media;
             }
         }
 
@@ -200,7 +246,7 @@ namespace WCF
                 var media = from m in ctx.Media where m.Path.Contains(searchQuery) select m;
                 if (media != null)
                 {
-                    foreach(Media m in media)
+                    foreach (Media m in media)
                     {
                         foundMedia.Add(m);
                     }
@@ -246,27 +292,35 @@ namespace WCF
 
         }
 
-        public static List<ICollection<Person>> getPersonsFromMedia(Media media)
+        public static List<Person> getPersonsFromMedia(Media media)
         {
             /// Primeste un obiect de tip media.
             /// Returneaza o lista a persoanelor asociate fisierului media.
-            
+
             using (MediaContainer ctx = new MediaContainer())
             {
-                var persons = (from m in ctx.Media where (m.MediaID == media.MediaID) select m.People).ToList();
-                return persons;
+                var people = ctx.Media
+                                .Where(m => m.MediaID == media.MediaID)
+                                .Select(m => m.People)
+                                .FirstOrDefault();
+
+                return people.ToList();
             }
         }
 
-        public static List<ICollection<CustomAttributes>> getCustomAttributesFromMedia(Media media)
+        public static List<CustomAttributes> getCustomAttributesFromMedia(Media media)
         {
             /// Primeste un obiect de tip media.
             /// Returneaza o lista a atributelor de tip "custom" asociate fisierului media.
 
             using (MediaContainer ctx = new MediaContainer())
             {
-                var custom_attributes = (from m in ctx.Media where (m.MediaID == media.MediaID) select m.CustomAttributes).ToList();
-                return custom_attributes;
+                var customAttributes = ctx.Media
+                                          .Where(m => m.MediaID == media.MediaID)
+                                          .Select(m => m.CustomAttributes)
+                                          .FirstOrDefault();
+
+                return customAttributes.ToList();
             }
         }
 
@@ -276,18 +330,23 @@ namespace WCF
             {
                 var location = ctx.Locations
                                    .Where(l => l.Name == name)
-                                   .SingleOrDefault();
+                                   .FirstOrDefault();
+
+                if (location != null)
+                {
+                    Console.WriteLine(location.Name);
+                }
                 return location;
             }
         }
 
         public static Event getEventByName(string name)
         {
-            using(MediaContainer ctx = new MediaContainer())
+            using (MediaContainer ctx = new MediaContainer())
             {
                 var mediaEvent = ctx.Events
                                     .Where(e => e.Name == name)
-                                    .SingleOrDefault();
+                                    .FirstOrDefault();
 
                 return mediaEvent;
             }
@@ -297,20 +356,26 @@ namespace WCF
         {
             using (MediaContainer ctx = new MediaContainer())
             {
-                var person = ctx.People
-                                .Where(p => p.Name == name)
-                                .SingleOrDefault();
-                return person;
+                //Person person = ctx.People
+                //                .FirstOrDefault(p => p.Name == name);
+
+                var result = from p in ctx.People where p.Name == name select p;
+
+                if (result.Any())
+                {
+                    return result.First();
+                }
+                return null;
             }
         }
 
         public static CustomAttributes getAttributeByDescription(string description)
         {
-            using(MediaContainer ctx = new MediaContainer())
+            using (MediaContainer ctx = new MediaContainer())
             {
                 var attribute = ctx.CustomAttributes
                                     .Where(a => a.Description == description)
-                                    .SingleOrDefault();
+                                    .FirstOrDefault();
                 return attribute;
             }
         }

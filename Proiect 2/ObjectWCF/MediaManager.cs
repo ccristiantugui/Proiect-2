@@ -24,9 +24,9 @@ namespace ObjectWCF
             return API.addLocationToDatabase(location);
         }
 
-        public bool AddMedia(Media media)
+        public bool AddMedia(Media media, List<Person> people, List<CustomAttributes> customAttributes)
         {
-            return API.addMediaToDatabase(media);
+            return API.addMediaToDatabase(media, people, customAttributes);
         }
 
         public bool AddPerson(Person person)
@@ -54,7 +54,7 @@ namespace ObjectWCF
             return API.getAttributeByDescription(description);
         }
 
-        public List<ICollection<CustomAttributes>> GetCustomAttributesFromMedia(Media media)
+        public List<CustomAttributes> GetCustomAttributesFromMedia(Media media)
         {
             return API.getCustomAttributesFromMedia(media);
         }
@@ -69,7 +69,7 @@ namespace ObjectWCF
             return API.getLocationByName(name);
         }
 
-        public List<ICollection<Person>> GetPeopleFromMedia(Media media)
+        public List<Person> GetPeopleFromMedia(Media media)
         {
             return API.getPersonsFromMedia(media);
         }
