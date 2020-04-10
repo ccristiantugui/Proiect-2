@@ -57,8 +57,8 @@
             this.search_btn = new System.Windows.Forms.Button();
             this.searchResults_box = new System.Windows.Forms.GroupBox();
             this.movie_MediaPly = new AxWMPLib.AxWindowsMediaPlayer();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.extra_cmbBox = new System.Windows.Forms.ComboBox();
+            this.thumbnail_pixBox2 = new System.Windows.Forms.PictureBox();
+            this.attribute2_cmbBox = new System.Windows.Forms.ComboBox();
             this.persons2_cmbBox = new System.Windows.Forms.ComboBox();
             this.extra_lbl = new System.Windows.Forms.Label();
             this.persons2_lbl = new System.Windows.Forms.Label();
@@ -81,7 +81,7 @@
             this.browse_tab.SuspendLayout();
             this.searchResults_box.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.movie_MediaPly)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.thumbnail_pixBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // TabControl
@@ -95,6 +95,7 @@
             this.TabControl.SelectedIndex = 0;
             this.TabControl.Size = new System.Drawing.Size(772, 561);
             this.TabControl.TabIndex = 0;
+            this.TabControl.Selected += new System.Windows.Forms.TabControlEventHandler(this.TabControl_Selected);
             // 
             // addMedia_tab
             // 
@@ -379,8 +380,8 @@
             // searchResults_box
             // 
             this.searchResults_box.Controls.Add(this.movie_MediaPly);
-            this.searchResults_box.Controls.Add(this.pictureBox2);
-            this.searchResults_box.Controls.Add(this.extra_cmbBox);
+            this.searchResults_box.Controls.Add(this.thumbnail_pixBox2);
+            this.searchResults_box.Controls.Add(this.attribute2_cmbBox);
             this.searchResults_box.Controls.Add(this.persons2_cmbBox);
             this.searchResults_box.Controls.Add(this.extra_lbl);
             this.searchResults_box.Controls.Add(this.persons2_lbl);
@@ -408,28 +409,31 @@
             this.movie_MediaPly.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("movie_MediaPly.OcxState")));
             this.movie_MediaPly.Size = new System.Drawing.Size(291, 223);
             this.movie_MediaPly.TabIndex = 12;
+            this.movie_MediaPly.Visible = false;
             // 
-            // pictureBox2
+            // thumbnail_pixBox2
             // 
-            this.pictureBox2.ImageLocation = "";
-            this.pictureBox2.Location = new System.Drawing.Point(405, 110);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(291, 223);
-            this.pictureBox2.TabIndex = 19;
-            this.pictureBox2.TabStop = false;
+            this.thumbnail_pixBox2.ImageLocation = "";
+            this.thumbnail_pixBox2.Location = new System.Drawing.Point(405, 110);
+            this.thumbnail_pixBox2.Margin = new System.Windows.Forms.Padding(2);
+            this.thumbnail_pixBox2.Name = "thumbnail_pixBox2";
+            this.thumbnail_pixBox2.Size = new System.Drawing.Size(291, 223);
+            this.thumbnail_pixBox2.TabIndex = 19;
+            this.thumbnail_pixBox2.TabStop = false;
             // 
-            // extra_cmbBox
+            // attribute2_cmbBox
             // 
-            this.extra_cmbBox.FormattingEnabled = true;
-            this.extra_cmbBox.Location = new System.Drawing.Point(120, 292);
-            this.extra_cmbBox.Margin = new System.Windows.Forms.Padding(2);
-            this.extra_cmbBox.Name = "extra_cmbBox";
-            this.extra_cmbBox.Size = new System.Drawing.Size(141, 24);
-            this.extra_cmbBox.TabIndex = 17;
+            this.attribute2_cmbBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.attribute2_cmbBox.FormattingEnabled = true;
+            this.attribute2_cmbBox.Location = new System.Drawing.Point(120, 292);
+            this.attribute2_cmbBox.Margin = new System.Windows.Forms.Padding(2);
+            this.attribute2_cmbBox.Name = "attribute2_cmbBox";
+            this.attribute2_cmbBox.Size = new System.Drawing.Size(141, 24);
+            this.attribute2_cmbBox.TabIndex = 17;
             // 
             // persons2_cmbBox
             // 
+            this.persons2_cmbBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.persons2_cmbBox.FormattingEnabled = true;
             this.persons2_cmbBox.Location = new System.Drawing.Point(120, 238);
             this.persons2_cmbBox.Margin = new System.Windows.Forms.Padding(2);
@@ -506,6 +510,7 @@
             // 
             // searchResults_cmbBox
             // 
+            this.searchResults_cmbBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.searchResults_cmbBox.FormattingEnabled = true;
             this.searchResults_cmbBox.Location = new System.Drawing.Point(120, 28);
             this.searchResults_cmbBox.Margin = new System.Windows.Forms.Padding(2);
@@ -552,7 +557,7 @@
             this.searchResults_box.ResumeLayout(false);
             this.searchResults_box.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.movie_MediaPly)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.thumbnail_pixBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -587,14 +592,14 @@
         private System.Windows.Forms.Label location2_lbl;
         private System.Windows.Forms.Label extra_lbl;
         private System.Windows.Forms.ComboBox persons2_cmbBox;
-        private System.Windows.Forms.ComboBox extra_cmbBox;
+        private System.Windows.Forms.ComboBox attribute2_cmbBox;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.Button addMedia_btn;
         private System.Windows.Forms.Button search_btn;
         private System.Windows.Forms.ComboBox path_CmbCox;
         private System.Windows.Forms.ComboBox persons_cmbBox;
         private System.Windows.Forms.ToolTip toolTip1;
-        private System.Windows.Forms.PictureBox pictureBox2;
+        private System.Windows.Forms.PictureBox thumbnail_pixBox2;
         private System.Windows.Forms.PictureBox info_Box;
         private System.Windows.Forms.Button delete_btn;
         private AxWMPLib.AxWindowsMediaPlayer moviePreview_MediaPly;

@@ -18,7 +18,7 @@ namespace Client
     public partial class mmInterface : Form
     {
         private List<ComboBox> newAttributesList = new List<ComboBox>();
-        //private Dictionary<string, Media> searchResultsMap = new Dictionary<string, Media>();
+        private Dictionary<string, Media> searchResultsMap = new Dictionary<string, Media>();
         private List<string> addedPersons = new List<string>();
         private List<string> addedAttributes = new List<string>();
         MediaManagerClient mediaManagerProxy = new MediaManagerClient();
@@ -255,10 +255,10 @@ namespace Client
                 return;
             }
 
-            clearForm(mediaPath);
+            clearTab1(mediaPath);
         }
 
-        private void clearForm(string mediaPath)
+        private void clearTab1(string mediaPath)
         {
             path_CmbCox.Items.Remove(mediaPath);
             location_txt.Text = "";
@@ -266,6 +266,8 @@ namespace Client
             persons_cmbBox.Items.Clear();
             moviePreview_MediaPly.Visible = false;
             thumbnail_picBox.Visible = false;
+            moviePreview_MediaPly.Ctlcontrols.stop();
+            moviePreview_MediaPly.Visible = false;
             ResetCustomAttributes();
         }
 
@@ -436,54 +438,100 @@ namespace Client
         /////////// Second tab
         private void search_btn_Click(object sender, EventArgs e)
         {
-            //List<Media> searchResults = API.searchInDB(search_txt.Text);
-            //if (!searchResults.Any())
-            //{
-            //    initializeSearchResults((searchResults));
-            //}
+            clearTab2();
+
+            List<Media> searchResults = mediaManagerProxy.SearchInDB(search_txt.Text).ToList();
+            Console.WriteLine("Rezultat: " + searchResults.Count);
+            foreach(Media m in searchResults)
+            {
+                Console.WriteLine("Path: " + m.Path);
+            }
+            if (searchResults.Any())
+            {
+                initializeSearchResults((searchResults));
+            }
         }
 
-        private void initializeSearchResults(List<int> searchResults)
+        private void clearTab2()
         {
-            //foreach(Media result in searchResults)
-            //{
-            //    searchResults_cmbBox.Items.Add(result.Path);
-            //    this.searchResultsMap.Add(result.Path, result);
-            //}
+            searchResults_cmbBox.Items.Clear();
+            movie_MediaPly.Ctlcontrols.stop();
+            movie_MediaPly.Visible = false;
+            thumbnail_pixBox2.Visible = false;
+            location2_txt.Text = "";
+            event2_txt.Text = "";
+            persons2_cmbBox.Items.Clear();
+            attribute2_cmbBox.Items.Clear();
+            this.searchResultsMap.Clear();
+        }
+
+        private void initializeSearchResults(List<Media> searchResults)
+        {
+            foreach (Media result in searchResults)
+            {
+                searchResults_cmbBox.Items.Add(result.Path);
+                this.searchResultsMap.Add(result.Path, result);
+            }
+            if (searchResults_cmbBox.Items.Count > 0)
+                searchResults_cmbBox.SelectedIndex = 0;
         }
 
         private void searchResults_cmbBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Media selectedMedia = this.searchResultsMap[searchResults_cmbBox.SelectedItem.ToString()];
-            //location2_txt.Text = selectedMedia.Location.ToString();
-            //event2_txt.Text = selectedMedia.Event.ToString();
-            //List<string> personsList = API.getPersonsFromMedia(selectedMedia);
-            //foreach(string person in personsList)
-            //{
-            //    persons2_cmbBox.Items.Add(person);
-            //}
+            Media selectedMedia = this.searchResultsMap[searchResults_cmbBox.SelectedItem.ToString()];
+            location2_txt.Text = selectedMedia.Location.Name.ToString();
+            event2_txt.Text = selectedMedia.Event.Name.ToString();
+            persons2_cmbBox.Items.Clear();
+            attribute2_cmbBox.Items.Clear();
 
-            //List<string> customAttributes = API.getCustomAttributesFromMedia(selectedMedia);
-            //foreach(string attribute in customAttributes)
-            //{
-            //    extra_cmbBox.Items.Add(attribute);
-            //}
+            foreach (Person person in selectedMedia.People)
+            {
+                persons2_cmbBox.Items.Add(person.Name);
+            }
+            if(persons2_cmbBox.Items.Count > 0)
+                persons2_cmbBox.SelectedIndex = 0;
 
-            //if(selectedMedia.MediaType == MediaType.Photo)
-            //{
-            //    movie_MediaPly.Visible = false;
-            //}
-        }
+            foreach (CustomAttributes attribute in selectedMedia.CustomAttributes)
+            {
+                attribute2_cmbBox.Items.Add(attribute.Description);
+            }
+            if(attribute2_cmbBox.Items.Count > 0)
+                attribute2_cmbBox.SelectedIndex = 0;
 
-        private void play_btn_Click(object sender, EventArgs e)
-        {
-            //movie_MediaPly.Visible = true;
-            //movie_MediaPly.URL = searchResults_cmbBox.SelectedItem.ToString();
+            switch (selectedMedia.MediaType)
+            {
+                case MediaType.Photo:
+                    movie_MediaPly.Visible = false;
+                    movie_MediaPly.Ctlcontrols.stop();
+                    thumbnail_pixBox2.Visible = true;
+                    thumbnail_pixBox2.Image = Image.FromFile(selectedMedia.Path);
+                    break;
+
+                case MediaType.Video:
+                    movie_MediaPly.Visible = true;
+                    thumbnail_pixBox2.Visible = false;
+                    movie_MediaPly.URL = selectedMedia.Path;
+                    break;
+            }
+
         }
 
         private void delete_btn_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void TabControl_Selected(object sender, TabControlEventArgs e)
+        {
+            switch (e.TabPageIndex)
+            {
+                case 0:
+                    movie_MediaPly.Ctlcontrols.stop();
+                    break;
+                case 1:
+                    moviePreview_MediaPly.Ctlcontrols.stop();
+                    break;
+            }
         }
 
 

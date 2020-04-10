@@ -280,55 +280,67 @@ namespace WCF
 
             using (MediaContainer ctx = new MediaContainer())
             {
+                searchQuery = searchQuery.ToLower();
+
                 List<Media> foundMedia = new List<Media>();
 
-                var media = from m in ctx.Media where m.Path.Contains(searchQuery) select m;
-                if (media != null)
-                {
-                    foreach (Media m in media)
-                    {
-                        foundMedia.Add(m);
-                    }
-                }
+                var media = ctx.Media.Include(m => m.Location)
+                                 .Include(m => m.Event)
+                                 .Include(m => m.People)
+                                 .Include(m => m.CustomAttributes)
+                                 .Where(m => m.Path.ToLower().Contains(searchQuery) || searchQuery.Contains(m.Path.ToLower()));
 
-                media = from m in ctx.Media where m.Location.Name.Contains(searchQuery) select m;
-                if (media != null)
-                {
-                    foreach (Media m in media)
-                    {
-                        foundMedia.Add(m);
-                    }
-                }
+                addSearchResultToList(foundMedia, media, 1);
 
-                media = from m in ctx.Media where m.Event.Name.Contains(searchQuery) select m;
-                if (media != null)
-                {
-                    foreach (Media m in media)
-                    {
-                        foundMedia.Add(m);
-                    }
-                }
+                media = ctx.Media.Include(m => m.Location)
+                                 .Include(m => m.Event)
+                                 .Include(m => m.People)
+                                 .Include(m => m.CustomAttributes)
+                                 .Where(m => m.Location.Name.ToLower().Contains(searchQuery) || searchQuery.Contains(m.Path.ToLower()));
 
-                media = ctx.Media.Include(m => m.People.Where(p => p.Name.Contains(searchQuery)));
-                if (media != null)
-                {
-                    foreach (Media m in media)
-                    {
-                        foundMedia.Add(m);
-                    }
-                }
-                media = ctx.Media.Include(m => m.CustomAttributes.Where(ca => ca.Description.Contains(searchQuery)));
-                if (media != null)
-                {
-                    foreach (Media m in media)
-                    {
-                        foundMedia.Add(m);
-                    }
-                }
+                addSearchResultToList(foundMedia, media, 2);
+
+                media = ctx.Media.Include(m => m.Location)
+                                 .Include(m => m.Event)
+                                 .Include(m => m.People)
+                                 .Include(m => m.CustomAttributes)
+                                 .Where(m => m.Event.Name.ToLower().Contains(searchQuery) || searchQuery.Contains(m.Event.Name.ToLower()));
+
+                addSearchResultToList(foundMedia, media, 3);
+
+                media = ctx.Media.Include(m => m.Location)
+                                 .Include(m => m.Event)
+                                 .Include(m => m.People)
+                                 .Include(m => m.CustomAttributes)
+                                 .Where(m => m.People.Any(p => p.Name.ToLower().Contains(searchQuery) || searchQuery.Contains(p.Name.ToLower())));
+
+                addSearchResultToList(foundMedia, media, 4);
+
+                media = ctx.Media.Include(m => m.Location)
+                                 .Include(m => m.Event)
+                                 .Include(m => m.People)
+                                 .Include(m => m.CustomAttributes)
+                                 .Where(m => m.CustomAttributes.Any(c => c.Description.ToLower().Contains(searchQuery) || searchQuery.Contains(c.Description.ToLower())));
+
+                addSearchResultToList(foundMedia, media, 5);
 
                 return foundMedia;
             }
 
+        }
+
+        private static void addSearchResultToList(List<Media> foundMedia, IQueryable<Media> media, int x)
+        {
+            Console.WriteLine("Apel: " + x);
+            if (media != null)
+            {
+                foreach (Media m in media)
+                {
+                    Console.WriteLine(m.Path);
+                    if (!foundMedia.Contains(m))
+                        foundMedia.Add(m);
+                }
+            }
         }
 
         public static List<Person> getPersonsFromMedia(Media media)
