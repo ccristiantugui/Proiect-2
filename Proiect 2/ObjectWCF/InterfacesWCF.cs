@@ -16,7 +16,7 @@ namespace ObjectWCF
         bool AddMedia(Media media, List<Person> people, List<CustomAttributes> customAttributes);
 
         [OperationContract]
-        bool UpdateMedia(Media media);
+        bool UpdateMedia(Media oldMedia, Media newMedia, List<Person> people, List<CustomAttributes> customAttributes);
 
         [OperationContract]
         int DeleteMedia(Media media);

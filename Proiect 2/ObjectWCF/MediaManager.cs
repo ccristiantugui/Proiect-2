@@ -84,9 +84,9 @@ namespace ObjectWCF
             return API.searchInDB(searchKey);
         }
 
-        public bool UpdateMedia(Media media)
+        public bool UpdateMedia(Media oldMedia, Media newMedia, List<Person> people, List<CustomAttributes> customAttributes)
         {
-            return API.updateMediaInDatabase(media);
+            return API.updateMediaInDatabase(oldMedia, newMedia, people, customAttributes);
         }
     }
 }

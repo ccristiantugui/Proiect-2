@@ -226,31 +226,100 @@ namespace Client
 
             mediaToAdd.Path = mediaPath;
 
-            if (mediaLocation.Any())
+            addLocationToMedia(mediaToAdd, mediaLocation);
+
+            addEventToMedia(mediaToAdd, mediaEvent);
+
+            List<Person> associatedPersons = new List<Person>();
+            associatedPersons = getAssociatedPersons(mediaPersons, associatedPersons);
+
+            List<CustomAttributes> associatedAttributes = new List<CustomAttributes>();
+            associatedAttributes = getAssociatedAttributes(mediaAttributes, associatedAttributes);
+
+            mediaToAdd.ModifiedAt = DateTime.Now;
+            mediaToAdd.CreatedAt = DateTime.Now;
+            switch (API.fileType(mediaToAdd.Path))
             {
-                Location location = mediaManagerProxy.GetLocationByName(mediaLocation);
-                if (location == null)
-                {
-                    location = new Location();
-                    location.Name = mediaLocation;
-                    if (!mediaManagerProxy.AddLocation(location))
-                    {
-                        setErrorMessage("The location you entered could not be added.", "add");
-                        return;
-                    }
-
-                    location = mediaManagerProxy.GetLocationByName(mediaLocation);
-                }
-
-                mediaToAdd.Location = location;
-                mediaToAdd.LocationLocationID = location.LocationID;
+                case "Image":
+                    mediaToAdd.MediaType = WCF.MediaType.Photo;
+                    break;
+                case "Video":
+                    mediaToAdd.MediaType = WCF.MediaType.Video;
+                    break;
             }
-            else
+
+            bool succes = mediaManagerProxy.AddMedia(mediaToAdd, associatedPersons.ToArray(), associatedAttributes.ToArray());
+            if (!succes)
             {
-                setErrorMessage("You have not entered a location.", "add");
+                setErrorMessage("The media could not be added.", "add");
                 return;
             }
 
+            clearForm(mediaPath);
+        }
+
+        private void clearForm(string mediaPath)
+        {
+            path_CmbCox.Items.Remove(mediaPath);
+            location_txt.Text = "";
+            event_txt.Text = "";
+            persons_cmbBox.Items.Clear();
+            moviePreview_MediaPly.Visible = false;
+            thumbnail_picBox.Visible = false;
+            ResetCustomAttributes();
+        }
+
+        private List<CustomAttributes> getAssociatedAttributes(List<string> mediaAttributes, List<CustomAttributes> associatedAttributes)
+        {
+            foreach (string attributeDescription in mediaAttributes)
+            {
+                if (attributeDescription.Any())
+                {
+                    CustomAttributes attribute = mediaManagerProxy.GetAttributeByDescription(attributeDescription);
+                    if (attribute == null)
+                    {
+                        attribute = new CustomAttributes();
+                        attribute.Description = attributeDescription;
+                        if (!mediaManagerProxy.AddCustomAttribute(attribute))
+                        {
+                            setErrorMessage("Attribute " + attributeDescription + " could not be added.", "add");
+                            return null;
+                        }
+                        attribute = mediaManagerProxy.GetAttributeByDescription(attributeDescription);
+                    }
+                    associatedAttributes.Add(attribute);
+                }
+            }
+
+            return associatedAttributes;
+        }
+
+        private List<Person> getAssociatedPersons(List<string> mediaPersons, List<Person> associatedPersons)
+        {
+            foreach (string personName in mediaPersons)
+            {
+                Person person = mediaManagerProxy.GetPersonByName(personName);
+                if (person == null)
+                {
+                    person = new Person();
+                    person.Name = personName;
+                    bool success = mediaManagerProxy.AddPerson(person);
+                    if (!success)
+                    {
+                        setErrorMessage("Person " + personName + " could not be added.", "add");
+                        return null;
+                    }
+                    person = mediaManagerProxy.GetPersonByName(personName);
+
+                }
+                associatedPersons.Add(person);
+            }
+
+            return associatedPersons;
+        }
+
+        private void addEventToMedia(Media mediaToAdd, string mediaEvent)
+        {
             if (mediaEvent.Any())
             {
                 Event mEvent = mediaManagerProxy.GetEventByName(mediaEvent);
@@ -275,75 +344,34 @@ namespace Client
                 setErrorMessage("You have not entered an event.", "add");
                 return;
             }
+        }
 
-            List<Person> associatedPersons = new List<Person>();
-            foreach (string personName in mediaPersons)
+        private void addLocationToMedia(Media mediaToAdd, string mediaLocation)
+        {
+            if (mediaLocation.Any())
             {
-                Person person = mediaManagerProxy.GetPersonByName(personName);
-                if (person == null)
+                Location location = mediaManagerProxy.GetLocationByName(mediaLocation);
+                if (location == null)
                 {
-                    person = new Person();
-                    person.Name = personName;
-                    bool success = mediaManagerProxy.AddPerson(person);
-                    if (!success)
+                    location = new Location();
+                    location.Name = mediaLocation;
+                    if (!mediaManagerProxy.AddLocation(location))
                     {
-                        setErrorMessage("Person " + personName + " could not be added.", "add");
+                        setErrorMessage("The location you entered could not be added.", "add");
                         return;
                     }
-                    person = mediaManagerProxy.GetPersonByName(personName);
 
+                    location = mediaManagerProxy.GetLocationByName(mediaLocation);
                 }
-                associatedPersons.Add(person);
+
+                mediaToAdd.Location = location;
+                mediaToAdd.LocationLocationID = location.LocationID;
             }
-
-            List<CustomAttributes> associatedAttributes = new List<CustomAttributes>();
-            foreach (string attributeDescription in mediaAttributes)
+            else
             {
-                if (attributeDescription.Any())
-                {
-                    CustomAttributes attribute = mediaManagerProxy.GetAttributeByDescription(attributeDescription);
-                    if (attribute == null)
-                    {
-                        attribute = new CustomAttributes();
-                        attribute.Description = attributeDescription;
-                        if (!mediaManagerProxy.AddCustomAttribute(attribute))
-                        {
-                            setErrorMessage("Attribute " + attributeDescription + " could not be added.", "add");
-                            return;
-                        }
-                        attribute = mediaManagerProxy.GetAttributeByDescription(attributeDescription);
-                    }
-                    associatedAttributes.Add(attribute);
-                }
-            }
-
-
-            mediaToAdd.ModifiedAt = DateTime.Now;
-            mediaToAdd.CreatedAt = DateTime.Now;
-            switch (API.fileType(mediaToAdd.Path))
-            {
-                case "Image":
-                    mediaToAdd.MediaType = WCF.MediaType.Photo;
-                    break;
-                case "Video":
-                    mediaToAdd.MediaType = WCF.MediaType.Video;
-                    break;
-            }
-
-            bool succes = mediaManagerProxy.AddMedia(mediaToAdd, associatedPersons.ToArray(), associatedAttributes.ToArray());
-            if (!succes)
-            {
-                setErrorMessage("The media could not be added.", "add");
+                setErrorMessage("You have not entered a location.", "add");
                 return;
             }
-
-            path_CmbCox.Items.Remove(mediaPath);
-            location_txt.Text = "";
-            event_txt.Text = "";
-            persons_cmbBox.Items.Clear();
-            moviePreview_MediaPly.Visible = false;
-            thumbnail_picBox.Visible = false;
-            ResetCustomAttributes();
         }
 
         private void ResetCustomAttributes()

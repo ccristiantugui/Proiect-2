@@ -7,6 +7,7 @@ using System.IO;
 using System.Drawing;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
+using System.Data.Entity.Migrations;
 
 namespace WCF
 {
@@ -49,30 +50,16 @@ namespace WCF
 
             using (MediaContainer ctx = new MediaContainer())
             {
-                if (media.MediaID == 0)
+                Media searchedMedia = ctx.Media
+                                         .Where(m => m.Path == media.Path)
+                                         .FirstOrDefault();
+                if (searchedMedia == null)
                 {
                     try
                     {
                         var it = ctx.Entry<Media>(media).State = EntityState.Added;
-                        //ctx.Media.Add(media);
 
                         Console.WriteLine(media.LocationLocationID);
-
-                        //if (media.LocationLocationID != 0)
-                        //{
-                        //    Console.WriteLine(media.LocationLocationID);
-                        //    Location l = ctx.Locations.Find(media.LocationLocationID);
-                        //    Console.WriteLine(l);
-                        //    l.Media.Add(media);
-                        //    ctx.Entry<Location>(l).State = EntityState.Modified;
-                        //}
-
-                        //if (media.EventEventID != 0)
-                        //{
-                        //    Event e = ctx.Events.Find(media.EventEventID);
-                        //    e.Media.Add(media);
-                        //    ctx.Entry<Event>(e).State = EntityState.Modified;
-                        //}
 
                         foreach (Person p in people)
                         {
@@ -95,7 +82,7 @@ namespace WCF
                                 {
                                     media.CustomAttributes = new List<CustomAttributes>();
                                 }
-                                if (media.CustomAttributes.Contains(custom))
+                                if (!media.CustomAttributes.Contains(custom))
                                 {
                                     ctx.Entry<CustomAttributes>(custom).State = EntityState.Unchanged;
                                     media.CustomAttributes.Add(custom);
@@ -129,16 +116,18 @@ namespace WCF
                 }
                 else
                 {
-                    return updateMediaInDatabase(media);
+                    return updateMediaInDatabase(searchedMedia, media, people, customAttributes);
                 }
             }
         }
 
-        public static bool updateMediaInDatabase(Media media)
+        public static bool updateMediaInDatabase(Media oldMedia, Media newMedia, List<Person> people, List<CustomAttributes> customAttributes)
         {
             using (MediaContainer ctx = new MediaContainer())
             {
-                Media oldMedia = ctx.Media.Find(media.MediaID);
+                //Media oldMedia = ctx.Media.Find(media.MediaID);
+
+                oldMedia = ctx.Media.Include(m => m.CustomAttributes).Include(m => m.People).Where(m => m.MediaID == oldMedia.MediaID).First();
 
                 if (oldMedia == null)
                 {
@@ -146,11 +135,61 @@ namespace WCF
                 }
                 else
                 {
-                    oldMedia.Path = media.Path;
-                    oldMedia.MediaType = media.MediaType;
-                    oldMedia.LocationLocationID = media.LocationLocationID;
-                    oldMedia.EventEventID = media.EventEventID;
-                    oldMedia.CustomAttributes = media.CustomAttributes;
+                    foreach (Person person in oldMedia.People.ToList())
+                    {
+                        oldMedia.People.Remove(person);
+                    }
+
+                    foreach (CustomAttributes custom in oldMedia.CustomAttributes.ToList())
+                    {
+                        oldMedia.CustomAttributes.Remove(custom);
+                    }
+
+                    oldMedia.Path = newMedia.Path;
+                    oldMedia.MediaType = newMedia.MediaType;
+                    oldMedia.Location = newMedia.Location;
+                    oldMedia.LocationLocationID = newMedia.LocationLocationID;
+                    Location location = ctx.Locations.Find(oldMedia.LocationLocationID);
+                    ctx.Entry<Location>(location).State = EntityState.Unchanged;
+
+                    oldMedia.Event = newMedia.Event;
+                    oldMedia.EventEventID = newMedia.EventEventID;
+                    Event mEvent = ctx.Events.Find(oldMedia.EventEventID);
+                    ctx.Entry<Event>(mEvent).State = EntityState.Unchanged;
+
+                    foreach (Person p in people)
+                    {
+                        Person auxPerson = ctx.People.Find(p.PersonID);
+                        if (oldMedia.People == null)
+                        {
+                            oldMedia.People = new List<Person>();
+                        }
+                        if (!oldMedia.People.Contains(auxPerson))
+                        {
+                            //ctx.Set<Person>().AddOrUpdate(auxPerson);
+                            ctx.Entry<Person>(auxPerson).State = EntityState.Unchanged;
+
+                            oldMedia.People.Add(auxPerson);
+                        }
+                    }
+
+                    foreach (CustomAttributes custom in customAttributes)
+                    {
+                        if (custom.Description.Any())
+                        {
+                            CustomAttributes auxAttribute = ctx.CustomAttributes.Find(custom.CustomAttributeID);
+                            if (oldMedia.CustomAttributes == null)
+                            {
+                                oldMedia.CustomAttributes = new List<CustomAttributes>();
+                            }
+                            if (!oldMedia.CustomAttributes.Contains(auxAttribute))
+                            {
+                                //ctx.Set<CustomAttributes>().AddOrUpdate(auxAttribute);
+                                ctx.Entry<CustomAttributes>(auxAttribute).State = EntityState.Unchanged;
+                                oldMedia.CustomAttributes.Add(auxAttribute);
+                            }
+                        }
+                    }
                     ctx.SaveChanges();
                     return true;
                 }
