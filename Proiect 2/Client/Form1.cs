@@ -518,7 +518,20 @@ namespace Client
 
         private void delete_btn_Click(object sender, EventArgs e)
         {
+            Media selectedMedia = this.searchResultsMap[searchResults_cmbBox.SelectedItem.ToString()];
 
+            mediaManagerProxy.DeleteMedia(selectedMedia);
+            searchResultsMap.Remove(selectedMedia.Path);
+            searchResults_cmbBox.Items.Remove(selectedMedia.Path);
+            Dictionary<String, Media> auxSearchResultsMap = new Dictionary<string, Media>(searchResultsMap);
+            clearTab2();
+            searchResultsMap = new Dictionary<string, Media>(auxSearchResultsMap);
+            foreach(Media media in searchResultsMap.Values)
+            {
+                searchResults_cmbBox.Items.Add(media.Path);
+            }
+            if (searchResults_cmbBox.Items.Count > 0)
+                searchResults_cmbBox.SelectedIndex = 0;
         }
 
         private void TabControl_Selected(object sender, TabControlEventArgs e)

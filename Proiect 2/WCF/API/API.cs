@@ -196,15 +196,18 @@ namespace WCF
             }
         }
 
-        public static int removeMediaFromDatabase(string path)
+        public static int removeMediaFromDatabase(Media media)
         {
             /// Sterge din baza de date intrarea cu calea specificata in parametrii.
             /// Returneaza True pentru executie reusita sau False altfel.
 
             using (MediaContainer ctx = new MediaContainer())
             {
-                const string Sql = "Delete From Media where path = @p0";
-                return ctx.Database.ExecuteSqlCommand(Sql, path);
+
+                ctx.Media.Attach(media);
+                ctx.Entry<Media>(media).State = EntityState.Deleted;
+                ctx.SaveChanges();
+                return 1;
             }
         }
 

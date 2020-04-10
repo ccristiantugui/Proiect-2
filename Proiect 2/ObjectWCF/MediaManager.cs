@@ -36,7 +36,7 @@ namespace ObjectWCF
 
         public int DeleteMedia(Media media)
         {
-            return API.removeMediaFromDatabase(media.Path);
+            return API.removeMediaFromDatabase(media);
         }
 
         public List<string> GetAllAttributes()
