@@ -27,11 +27,6 @@ namespace ObjectWCF
         [OperationContract]
         List<Media> SearchInDB(String searchKey);
 
-        [OperationContract]
-        List<Person> GetPeopleFromMedia(Media media);
-
-        [OperationContract]
-        List<CustomAttributes> GetCustomAttributesFromMedia(Media media);
     }
 
     [ServiceContract]

@@ -1,4 +1,6 @@
 
 *.lock
 *.exe
-*.exe
+*.obj
+*.drawio
+

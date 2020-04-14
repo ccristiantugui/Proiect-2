@@ -13,34 +13,6 @@ namespace WCF
 {
     public static class API
     {
-        public static List<string> getPersonsFromDB()
-        {
-            /// Returneaza lista de persoane existente in baza de date.
-
-            using (MediaContainer ctx = new MediaContainer())
-            {
-                List<string> persons = new List<string>();
-                var personsResults = (from p in ctx.People select p.Name);
-                if (personsResults.Any())
-                    persons = personsResults.ToList();
-                return persons;
-            }
-        }
-
-        public static List<string> getCustomAttributesFromDB()
-        {
-            /// Returneaza lista de atribute "custom" existente in baza de date.
-
-            using (MediaContainer ctx = new MediaContainer())
-            {
-                List<string> attributes = new List<string>();
-                var attributesResults = (from ca in ctx.CustomAttributes select ca.Description);
-                if (attributesResults.Any())
-                    attributes = attributesResults.ToList();
-                return attributes;
-            }
-        }
-
         public static bool addMediaToDatabase(Media media, List<Person> people, List<CustomAttributes> customAttributes)
         {
             /// Adauga in baza de date o intrare cu valorile parametrilor. 
@@ -217,6 +189,18 @@ namespace WCF
             }
         }
 
+        public static Media getMediaByPath(string path)
+        {
+            using (MediaContainer ctx = new MediaContainer())
+            {
+                //var media = from m in ctx.Media where m.Path == path select m;
+                var media = ctx.Media
+                               .Where(m => m.Path == path)
+                               .SingleOrDefault();
+                return media;
+            }
+        }
+
         public static bool addLocationToDatabase(Location location)
         {
             using (MediaContainer ctx = new MediaContainer())
@@ -228,6 +212,22 @@ namespace WCF
                     return true;
                 }
                 return false;
+            }
+        }
+
+        public static Location getLocationByName(string name)
+        {
+            using (MediaContainer ctx = new MediaContainer())
+            {
+                var location = ctx.Locations
+                                   .Where(l => l.Name == name)
+                                   .FirstOrDefault();
+
+                if (location != null)
+                {
+                    Console.WriteLine(location.Name);
+                }
+                return location;
             }
         }
 
@@ -245,6 +245,18 @@ namespace WCF
             }
         }
 
+        public static Event getEventByName(string name)
+        {
+            using (MediaContainer ctx = new MediaContainer())
+            {
+                var mediaEvent = ctx.Events
+                                    .Where(e => e.Name == name)
+                                    .FirstOrDefault();
+
+                return mediaEvent;
+            }
+        }
+
         public static bool addPersonToDatabase(Person person)
         {
             using (MediaContainer ctx = new MediaContainer())
@@ -256,6 +268,36 @@ namespace WCF
                     return true;
                 }
                 return false;
+            }
+        }
+
+        public static List<string> getPersonsFromDB()
+        {
+            /// Returneaza lista de persoane existente in baza de date.
+
+            using (MediaContainer ctx = new MediaContainer())
+            {
+                List<string> persons = new List<string>();
+                var personsResults = (from p in ctx.People select p.Name);
+                if (personsResults.Any())
+                    persons = personsResults.ToList();
+                return persons;
+            }
+        }
+        public static Person getPersonByName(string name)
+        {
+            using (MediaContainer ctx = new MediaContainer())
+            {
+                //Person person = ctx.People
+                //                .FirstOrDefault(p => p.Name == name);
+
+                var result = from p in ctx.People where p.Name == name select p;
+
+                if (result.Any())
+                {
+                    return result.First();
+                }
+                return null;
             }
         }
 
@@ -273,15 +315,28 @@ namespace WCF
             }
         }
 
-        public static Media getMediaByPath(string path)
+        public static List<string> getCustomAttributesFromDB()
+        {
+            /// Returneaza lista de atribute "custom" existente in baza de date.
+
+            using (MediaContainer ctx = new MediaContainer())
+            {
+                List<string> attributes = new List<string>();
+                var attributesResults = (from ca in ctx.CustomAttributes select ca.Description);
+                if (attributesResults.Any())
+                    attributes = attributesResults.ToList();
+                return attributes;
+            }
+        }
+
+        public static CustomAttributes getAttributeByDescription(string description)
         {
             using (MediaContainer ctx = new MediaContainer())
             {
-                //var media = from m in ctx.Media where m.Path == path select m;
-                var media = ctx.Media
-                               .Where(m => m.Path == path)
-                               .SingleOrDefault();
-                return media;
+                var attribute = ctx.CustomAttributes
+                                    .Where(a => a.Description == description)
+                                    .FirstOrDefault();
+                return attribute;
             }
         }
 
@@ -302,7 +357,7 @@ namespace WCF
                                  .Include(m => m.CustomAttributes)
                                  .Where(m => m.Path.ToLower().Contains(searchQuery) || searchQuery.Contains(m.Path.ToLower()));
 
-                addSearchResultToList(foundMedia, media, 1);
+                addSearchResultToList(foundMedia, media);
 
                 media = ctx.Media.Include(m => m.Location)
                                  .Include(m => m.Event)
@@ -310,7 +365,7 @@ namespace WCF
                                  .Include(m => m.CustomAttributes)
                                  .Where(m => m.Location.Name.ToLower().Contains(searchQuery) || searchQuery.Contains(m.Path.ToLower()));
 
-                addSearchResultToList(foundMedia, media, 2);
+                addSearchResultToList(foundMedia, media);
 
                 media = ctx.Media.Include(m => m.Location)
                                  .Include(m => m.Event)
@@ -318,7 +373,7 @@ namespace WCF
                                  .Include(m => m.CustomAttributes)
                                  .Where(m => m.Event.Name.ToLower().Contains(searchQuery) || searchQuery.Contains(m.Event.Name.ToLower()));
 
-                addSearchResultToList(foundMedia, media, 3);
+                addSearchResultToList(foundMedia, media);
 
                 media = ctx.Media.Include(m => m.Location)
                                  .Include(m => m.Event)
@@ -326,7 +381,7 @@ namespace WCF
                                  .Include(m => m.CustomAttributes)
                                  .Where(m => m.People.Any(p => p.Name.ToLower().Contains(searchQuery) || searchQuery.Contains(p.Name.ToLower())));
 
-                addSearchResultToList(foundMedia, media, 4);
+                addSearchResultToList(foundMedia, media);
 
                 media = ctx.Media.Include(m => m.Location)
                                  .Include(m => m.Event)
@@ -334,14 +389,14 @@ namespace WCF
                                  .Include(m => m.CustomAttributes)
                                  .Where(m => m.CustomAttributes.Any(c => c.Description.ToLower().Contains(searchQuery) || searchQuery.Contains(c.Description.ToLower())));
 
-                addSearchResultToList(foundMedia, media, 5);
+                addSearchResultToList(foundMedia, media);
 
                 return foundMedia;
             }
 
         }
 
-        private static void addSearchResultToList(List<Media> foundMedia, IQueryable<Media> media, int x)
+        private static void addSearchResultToList(List<Media> foundMedia, IQueryable<Media> media)
         {
             if (media != null)
             {
@@ -350,94 +405,6 @@ namespace WCF
                     if (!foundMedia.Contains(m))
                         foundMedia.Add(m);
                 }
-            }
-        }
-
-        public static List<Person> getPersonsFromMedia(Media media)
-        {
-            /// Primeste un obiect de tip media.
-            /// Returneaza o lista a persoanelor asociate fisierului media.
-
-            using (MediaContainer ctx = new MediaContainer())
-            {
-                var people = ctx.Media
-                                .Where(m => m.MediaID == media.MediaID)
-                                .Select(m => m.People)
-                                .FirstOrDefault();
-
-                return people.ToList();
-            }
-        }
-
-        public static List<CustomAttributes> getCustomAttributesFromMedia(Media media)
-        {
-            /// Primeste un obiect de tip media.
-            /// Returneaza o lista a atributelor de tip "custom" asociate fisierului media.
-
-            using (MediaContainer ctx = new MediaContainer())
-            {
-                var customAttributes = ctx.Media
-                                          .Where(m => m.MediaID == media.MediaID)
-                                          .Select(m => m.CustomAttributes)
-                                          .FirstOrDefault();
-
-                return customAttributes.ToList();
-            }
-        }
-
-        public static Location getLocationByName(string name)
-        {
-            using (MediaContainer ctx = new MediaContainer())
-            {
-                var location = ctx.Locations
-                                   .Where(l => l.Name == name)
-                                   .FirstOrDefault();
-
-                if (location != null)
-                {
-                    Console.WriteLine(location.Name);
-                }
-                return location;
-            }
-        }
-
-        public static Event getEventByName(string name)
-        {
-            using (MediaContainer ctx = new MediaContainer())
-            {
-                var mediaEvent = ctx.Events
-                                    .Where(e => e.Name == name)
-                                    .FirstOrDefault();
-
-                return mediaEvent;
-            }
-        }
-
-        public static Person getPersonByName(string name)
-        {
-            using (MediaContainer ctx = new MediaContainer())
-            {
-                //Person person = ctx.People
-                //                .FirstOrDefault(p => p.Name == name);
-
-                var result = from p in ctx.People where p.Name == name select p;
-
-                if (result.Any())
-                {
-                    return result.First();
-                }
-                return null;
-            }
-        }
-
-        public static CustomAttributes getAttributeByDescription(string description)
-        {
-            using (MediaContainer ctx = new MediaContainer())
-            {
-                var attribute = ctx.CustomAttributes
-                                    .Where(a => a.Description == description)
-                                    .FirstOrDefault();
-                return attribute;
             }
         }
     }

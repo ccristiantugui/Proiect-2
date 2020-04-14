@@ -218,16 +218,12 @@ namespace Client
             string mediaLocation = location_txt.Text;
             string mediaEvent = event_txt.Text;
 
-            if(location_txt.Text == null)
-            {
-
-            }
-
 
             List<string> mediaPersons = new List<string>();
             foreach (object item in persons_cmbBox.Items)
             {
-                mediaPersons.Add(item.ToString());
+                if (!mediaPersons.Contains(item.ToString()))
+                    mediaPersons.Add(item.ToString());
             }
 
             List<string> mediaAttributes = new List<string>();
@@ -235,7 +231,8 @@ namespace Client
             {
                 if (att.Text != null)
                 {
-                    mediaAttributes.Add(att.Text);
+                    if (!mediaAttributes.Contains(att.Text))
+                        mediaAttributes.Add(att.Text);
                 }
             }
 
@@ -404,7 +401,7 @@ namespace Client
 
         private void ResetCustomAttributes()
         {
-            foreach(var attribute in newAttributesList)
+            foreach (var attribute in newAttributesList)
             {
                 if (newAttributesList.IndexOf(attribute) != 0)
                 {
@@ -468,7 +465,7 @@ namespace Client
 
             List<Media> searchResults = mediaManagerProxy.SearchInDB(search_txt.Text).ToList();
             Console.WriteLine("Rezultat: " + searchResults.Count);
-            foreach(Media m in searchResults)
+            foreach (Media m in searchResults)
             {
                 Console.WriteLine("Path: " + m.Path);
             }
@@ -514,14 +511,14 @@ namespace Client
             {
                 persons2_cmbBox.Items.Add(person.Name);
             }
-            if(persons2_cmbBox.Items.Count > 0)
+            if (persons2_cmbBox.Items.Count > 0)
                 persons2_cmbBox.SelectedIndex = 0;
 
             foreach (CustomAttributes attribute in selectedMedia.CustomAttributes)
             {
                 attribute2_cmbBox.Items.Add(attribute.Description);
             }
-            if(attribute2_cmbBox.Items.Count > 0)
+            if (attribute2_cmbBox.Items.Count > 0)
                 attribute2_cmbBox.SelectedIndex = 0;
 
             switch (selectedMedia.MediaType)
@@ -546,7 +543,7 @@ namespace Client
         {
             Media selectedMedia = this.searchResultsMap[searchResults_cmbBox.SelectedItem.ToString()];
 
-            if(mediaManagerProxy.DeleteMedia(selectedMedia) == 0)
+            if (mediaManagerProxy.DeleteMedia(selectedMedia) == 0)
             {
                 string messageText = "The media could not be deleted.";
                 MessageBox.Show(messageText);
@@ -558,7 +555,7 @@ namespace Client
             Dictionary<String, Media> auxSearchResultsMap = new Dictionary<string, Media>(searchResultsMap);
             clearTab2();
             searchResultsMap = new Dictionary<string, Media>(auxSearchResultsMap);
-            foreach(Media media in searchResultsMap.Values)
+            foreach (Media media in searchResultsMap.Values)
             {
                 searchResults_cmbBox.Items.Add(media.Path);
             }

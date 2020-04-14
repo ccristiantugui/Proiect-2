@@ -512,18 +512,6 @@ public interface IMediaManager
     [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/SearchInDB", ReplyAction = "http://tempuri.org/InterfaceMedia/SearchInDBResponse")]
     System.Threading.Tasks.Task<WCF.Media[]> SearchInDBAsync(string searchKey);
 
-    [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/GetPeopleFromMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/GetPeopleFromMediaResponse")]
-    WCF.Person[] GetPeopleFromMedia(WCF.Media media);
-
-    [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/GetPeopleFromMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/GetPeopleFromMediaResponse")]
-    System.Threading.Tasks.Task<WCF.Person[]> GetPeopleFromMediaAsync(WCF.Media media);
-
-    [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/GetCustomAttributesFromMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/GetCustomAttributesFromMediaResponse")]
-    WCF.CustomAttributes[] GetCustomAttributesFromMedia(WCF.Media media);
-
-    [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/GetCustomAttributesFromMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/GetCustomAttributesFromMediaResponse")]
-    System.Threading.Tasks.Task<WCF.CustomAttributes[]> GetCustomAttributesFromMediaAsync(WCF.Media media);
-
     [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceCustomAttributes/AddCustomAttribute", ReplyAction = "http://tempuri.org/InterfaceCustomAttributes/AddCustomAttributeResponse")]
     bool AddCustomAttribute(WCF.CustomAttributes customAttribute);
 
@@ -667,26 +655,6 @@ public partial class MediaManagerClient : System.ServiceModel.ClientBase<IMediaM
     public System.Threading.Tasks.Task<WCF.Media[]> SearchInDBAsync(string searchKey)
     {
         return base.Channel.SearchInDBAsync(searchKey);
-    }
-
-    public WCF.Person[] GetPeopleFromMedia(WCF.Media media)
-    {
-        return base.Channel.GetPeopleFromMedia(media);
-    }
-
-    public System.Threading.Tasks.Task<WCF.Person[]> GetPeopleFromMediaAsync(WCF.Media media)
-    {
-        return base.Channel.GetPeopleFromMediaAsync(media);
-    }
-
-    public WCF.CustomAttributes[] GetCustomAttributesFromMedia(WCF.Media media)
-    {
-        return base.Channel.GetCustomAttributesFromMedia(media);
-    }
-
-    public System.Threading.Tasks.Task<WCF.CustomAttributes[]> GetCustomAttributesFromMediaAsync(WCF.Media media)
-    {
-        return base.Channel.GetCustomAttributesFromMediaAsync(media);
     }
 
     public bool AddCustomAttribute(WCF.CustomAttributes customAttribute)

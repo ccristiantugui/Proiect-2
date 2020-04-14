@@ -59,11 +59,6 @@ namespace ObjectWCF
             return API.getAttributeByDescription(description);
         }
 
-        public List<CustomAttributes> GetCustomAttributesFromMedia(Media media)
-        {
-            return API.getCustomAttributesFromMedia(media);
-        }
-
         public Event GetEventByName(string name)
         {
             return API.getEventByName(name);
@@ -72,11 +67,6 @@ namespace ObjectWCF
         public Location GetLocationByName(string name)
         {
             return API.getLocationByName(name);
-        }
-
-        public List<Person> GetPeopleFromMedia(Media media)
-        {
-            return API.getPersonsFromMedia(media);
         }
 
         public Person GetPersonByName(string name)
