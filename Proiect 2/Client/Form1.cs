@@ -109,6 +109,16 @@ namespace Client
         private void path_CmbCox_SelectedIndexChanged(object sender, EventArgs e)
         {
             string filename = path_CmbCox.SelectedItem.ToString();
+
+            if (mediaManagerProxy.GetMedia(filename) != null)
+            {
+                setErrorMessage("This media file will me modified after Add.", "add");
+            }
+            else
+            {
+                setErrorMessage("", "add");
+            }
+
             switch (API.fileType(filename))
             {
                 case "Image":
@@ -208,6 +218,11 @@ namespace Client
             string mediaLocation = location_txt.Text;
             string mediaEvent = event_txt.Text;
 
+            if(location_txt.Text == null)
+            {
+
+            }
+
 
             List<string> mediaPersons = new List<string>();
             foreach (object item in persons_cmbBox.Items)
@@ -226,9 +241,11 @@ namespace Client
 
             mediaToAdd.Path = mediaPath;
 
-            addLocationToMedia(mediaToAdd, mediaLocation);
+            if (addLocationToMedia(mediaToAdd, mediaLocation) == false)
+                return;
 
-            addEventToMedia(mediaToAdd, mediaEvent);
+            if (addEventToMedia(mediaToAdd, mediaEvent) == false)
+                return;
 
             List<Person> associatedPersons = new List<Person>();
             associatedPersons = getAssociatedPersons(mediaPersons, associatedPersons);
@@ -253,6 +270,11 @@ namespace Client
             {
                 setErrorMessage("The media could not be added.", "add");
                 return;
+            }
+            else
+            {
+                var Msg = "The media was added.";
+                MessageBox.Show(Msg);
             }
 
             clearTab1(mediaPath);
@@ -320,7 +342,7 @@ namespace Client
             return associatedPersons;
         }
 
-        private void addEventToMedia(Media mediaToAdd, string mediaEvent)
+        private bool addEventToMedia(Media mediaToAdd, string mediaEvent)
         {
             if (mediaEvent.Any())
             {
@@ -331,8 +353,8 @@ namespace Client
                     mEvent.Name = mediaEvent;
                     if (!mediaManagerProxy.AddEvent(mEvent))
                     {
-                        setErrorMessage("The event youy entered could not be added.", "add");
-                        return;
+                        setErrorMessage("The event you entered could not be added.", "add");
+                        return false;
                     }
                     mEvent = mediaManagerProxy.GetEventByName(mediaEvent);
 
@@ -344,11 +366,13 @@ namespace Client
             else
             {
                 setErrorMessage("You have not entered an event.", "add");
-                return;
+                return false;
             }
+
+            return true;
         }
 
-        private void addLocationToMedia(Media mediaToAdd, string mediaLocation)
+        private bool addLocationToMedia(Media mediaToAdd, string mediaLocation)
         {
             if (mediaLocation.Any())
             {
@@ -360,7 +384,7 @@ namespace Client
                     if (!mediaManagerProxy.AddLocation(location))
                     {
                         setErrorMessage("The location you entered could not be added.", "add");
-                        return;
+                        return false;
                     }
 
                     location = mediaManagerProxy.GetLocationByName(mediaLocation);
@@ -372,8 +396,10 @@ namespace Client
             else
             {
                 setErrorMessage("You have not entered a location.", "add");
-                return;
+                return false;
             }
+
+            return true;
         }
 
         private void ResetCustomAttributes()
@@ -520,7 +546,13 @@ namespace Client
         {
             Media selectedMedia = this.searchResultsMap[searchResults_cmbBox.SelectedItem.ToString()];
 
-            mediaManagerProxy.DeleteMedia(selectedMedia);
+            if(mediaManagerProxy.DeleteMedia(selectedMedia) == 0)
+            {
+                string messageText = "The media could not be deleted.";
+                MessageBox.Show(messageText);
+                return;
+            }
+
             searchResultsMap.Remove(selectedMedia.Path);
             searchResults_cmbBox.Items.Remove(selectedMedia.Path);
             Dictionary<String, Media> auxSearchResultsMap = new Dictionary<string, Media>(searchResultsMap);
@@ -532,6 +564,8 @@ namespace Client
             }
             if (searchResults_cmbBox.Items.Count > 0)
                 searchResults_cmbBox.SelectedIndex = 0;
+            string message = "The media was deleted.";
+            MessageBox.Show(message);
         }
 
         private void TabControl_Selected(object sender, TabControlEventArgs e)

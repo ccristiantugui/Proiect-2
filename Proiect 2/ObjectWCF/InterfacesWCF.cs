@@ -13,6 +13,9 @@ namespace ObjectWCF
     interface InterfaceMedia
     {
         [OperationContract]
+        Media GetMedia(string path);
+
+        [OperationContract]
         bool AddMedia(Media media, List<Person> people, List<CustomAttributes> customAttributes);
 
         [OperationContract]

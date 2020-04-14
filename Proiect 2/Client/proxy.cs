@@ -482,6 +482,12 @@ namespace WCF
 public interface IMediaManager
 {
 
+    [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/GetMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/GetMediaResponse")]
+    WCF.Media GetMedia(string path);
+
+    [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/GetMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/GetMediaResponse")]
+    System.Threading.Tasks.Task<WCF.Media> GetMediaAsync(string path);
+
     [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/AddMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/AddMediaResponse")]
     bool AddMedia(WCF.Media media, WCF.Person[] people, WCF.CustomAttributes[] customAttributes);
 
@@ -489,10 +495,10 @@ public interface IMediaManager
     System.Threading.Tasks.Task<bool> AddMediaAsync(WCF.Media media, WCF.Person[] people, WCF.CustomAttributes[] customAttributes);
 
     [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/UpdateMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/UpdateMediaResponse")]
-    bool UpdateMedia(WCF.Media media);
+    bool UpdateMedia(WCF.Media oldMedia, WCF.Media newMedia, WCF.Person[] people, WCF.CustomAttributes[] customAttributes);
 
     [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/UpdateMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/UpdateMediaResponse")]
-    System.Threading.Tasks.Task<bool> UpdateMediaAsync(WCF.Media media);
+    System.Threading.Tasks.Task<bool> UpdateMediaAsync(WCF.Media oldMedia, WCF.Media newMedia, WCF.Person[] people, WCF.CustomAttributes[] customAttributes);
 
     [System.ServiceModel.OperationContractAttribute(Action = "http://tempuri.org/InterfaceMedia/DeleteMedia", ReplyAction = "http://tempuri.org/InterfaceMedia/DeleteMediaResponse")]
     int DeleteMedia(WCF.Media media);
@@ -613,6 +619,16 @@ public partial class MediaManagerClient : System.ServiceModel.ClientBase<IMediaM
     {
     }
 
+    public WCF.Media GetMedia(string path)
+    {
+        return base.Channel.GetMedia(path);
+    }
+
+    public System.Threading.Tasks.Task<WCF.Media> GetMediaAsync(string path)
+    {
+        return base.Channel.GetMediaAsync(path);
+    }
+
     public bool AddMedia(WCF.Media media, WCF.Person[] people, WCF.CustomAttributes[] customAttributes)
     {
         return base.Channel.AddMedia(media, people, customAttributes);
@@ -623,14 +639,14 @@ public partial class MediaManagerClient : System.ServiceModel.ClientBase<IMediaM
         return base.Channel.AddMediaAsync(media, people, customAttributes);
     }
 
-    public bool UpdateMedia(WCF.Media media)
+    public bool UpdateMedia(WCF.Media oldMedia, WCF.Media newMedia, WCF.Person[] people, WCF.CustomAttributes[] customAttributes)
     {
-        return base.Channel.UpdateMedia(media);
+        return base.Channel.UpdateMedia(oldMedia, newMedia, people, customAttributes);
     }
 
-    public System.Threading.Tasks.Task<bool> UpdateMediaAsync(WCF.Media media)
+    public System.Threading.Tasks.Task<bool> UpdateMediaAsync(WCF.Media oldMedia, WCF.Media newMedia, WCF.Person[] people, WCF.CustomAttributes[] customAttributes)
     {
-        return base.Channel.UpdateMediaAsync(media);
+        return base.Channel.UpdateMediaAsync(oldMedia, newMedia, people, customAttributes);
     }
 
     public int DeleteMedia(WCF.Media media)

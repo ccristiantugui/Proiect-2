@@ -13,7 +13,6 @@ namespace WCF
 {
     public static class API
     {
-
         public static List<string> getPersonsFromDB()
         {
             /// Returneaza lista de persoane existente in baza de date.
@@ -147,6 +146,7 @@ namespace WCF
 
                     oldMedia.Path = newMedia.Path;
                     oldMedia.MediaType = newMedia.MediaType;
+                    oldMedia.ModifiedAt = newMedia.ModifiedAt;
                     oldMedia.Location = newMedia.Location;
                     oldMedia.LocationLocationID = newMedia.LocationLocationID;
                     Location location = ctx.Locations.Find(oldMedia.LocationLocationID);
@@ -203,11 +203,17 @@ namespace WCF
 
             using (MediaContainer ctx = new MediaContainer())
             {
-
-                ctx.Media.Attach(media);
-                ctx.Entry<Media>(media).State = EntityState.Deleted;
-                ctx.SaveChanges();
-                return 1;
+                try
+                {
+                    ctx.Media.Attach(media);
+                    ctx.Entry<Media>(media).State = EntityState.Deleted;
+                    ctx.SaveChanges();
+                    return 1;
+                }
+                catch (Exception e)
+                {
+                    return 0;
+                }
             }
         }
 
@@ -271,8 +277,11 @@ namespace WCF
         {
             using (MediaContainer ctx = new MediaContainer())
             {
-                var media = from m in ctx.Media where m.Path == path select m;
-                return (Media)media;
+                //var media = from m in ctx.Media where m.Path == path select m;
+                var media = ctx.Media
+                               .Where(m => m.Path == path)
+                               .SingleOrDefault();
+                return media;
             }
         }
 
@@ -334,12 +343,10 @@ namespace WCF
 
         private static void addSearchResultToList(List<Media> foundMedia, IQueryable<Media> media, int x)
         {
-            Console.WriteLine("Apel: " + x);
             if (media != null)
             {
                 foreach (Media m in media)
                 {
-                    Console.WriteLine(m.Path);
                     if (!foundMedia.Contains(m))
                         foundMedia.Add(m);
                 }

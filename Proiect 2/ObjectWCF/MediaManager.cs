@@ -9,6 +9,11 @@ namespace ObjectWCF
 {
     public class MediaManager : IMediaManager
     {
+        public Media GetMedia(string path)
+        {
+            return API.getMediaByPath(path);
+        }
+
         public bool AddCustomAttribute(CustomAttributes customAttribute)
         {
             return API.addCustomAttributeToDatabase(customAttribute);
